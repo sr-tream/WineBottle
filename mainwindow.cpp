@@ -3,7 +3,6 @@
 
 #include "renamebottle.h"
 #include "newbottle.h"
-#include <QMessageBox>
 
 MainWindow::MainWindow(QStringList args, QWidget *parent) :
     QMainWindow(parent),
@@ -53,9 +52,6 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
         exeFile = exeFile.fileName().remove(".btl");
         app = "wine \"" + exeFile.fileName() + "\"" + ui->args->text();
     }
-    QMessageBox msg;
-    msg.setText(app);
-    msg.exec();
 
     if (QFile::exists("/usr/bin/winetricks"))
         ui->winetricks->setEnabled(true);
