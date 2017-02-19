@@ -3,6 +3,7 @@
 
 #include "renamebottle.h"
 #include "newbottle.h"
+#include <QMessageBox>
 
 MainWindow::MainWindow(QStringList args, QWidget *parent) :
     QMainWindow(parent),
@@ -31,12 +32,12 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
     app = "wine \"";
     bool execute = true;
     foreach (auto str, args){
-        app += str;
+        app += codec->fromUnicode(str);
         if (execute){
             app += "\"";
-            exeFile = str;
+            exeFile = QString(codec->fromUnicode(str));
             execute = false;
-        } else ui->args->setText(ui->args->text() + " " + str);
+        } else ui->args->setText(ui->args->text() + " " + codec->fromUnicode(str));
         app += " ";
     }
     if(exeFile.suffix().toLower() != "btl"){
@@ -52,6 +53,9 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
         exeFile = exeFile.fileName().remove(".btl");
         app = "wine \"" + exeFile.fileName() + "\"" + ui->args->text();
     }
+    QMessageBox msg;
+    msg.setText(app);
+    msg.exec();
 
     if (QFile::exists("/usr/bin/winetricks"))
         ui->winetricks->setEnabled(true);
@@ -65,12 +69,6 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
 MainWindow::~MainWindow()
 {
     delete ui;
-}
-
-void MainWindow::closeEvent(QCloseEvent * e)
-{
-    QString command = "export WINEPREFIX=" + QDir::homePath() + "/.wine";
-    system(command.toStdString().c_str());
 }
 
 void MainWindow::on_run_clicked()
