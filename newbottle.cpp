@@ -21,8 +21,16 @@ void NewBottle::on_buttonBox_accepted()
         if (bottle->itemText(i) == bottleName)
             return;
     bottle->addItem(bottleName);
-    QString command = "export WINEARCH=win" + ui->arch->currentText();
-    command += "\nexport WINEPREFIX=" + QDir::homePath() + "/.wine_" + bottleName;
-    command += "\nwinecfg";
-    system(command.toStdString().c_str());
+
+    QStringList env = QProcess::systemEnvironment();
+    env << "WINEARCH=win" + ui->arch->currentText();
+    env << "WINEPREFIX=" + QDir::homePath() + "/.wine_" + bottleName;
+
+    QProcess *proc = new QProcess(this);
+    proc->setEnvironment(env);
+    proc->setProgram("wine");
+    proc->setArguments(QStringList("wineboot"));
+    proc->start();
+    proc->waitForStarted();
+    proc->waitForFinished(1800000);
 }

@@ -6,6 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
+    a.setWindowIcon(QIcon(":/WineBottle.png"));
     QStringList args;
     QTextCodec *codec = QTextCodec::codecForName("cp1251");
     for (int i = 1; i < argc; ++i)

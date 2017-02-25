@@ -11,6 +11,15 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
     ui->setupUi(this);
     codec = QTextCodec::codecForName("cp1251");
 
+    winecfg = new QProcess(this);
+    connect(winecfg, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_winecfg(int, QProcess::ExitStatus)));
+    regedit = new QProcess(this);
+    connect(regedit, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_regedit(int, QProcess::ExitStatus)));
+    control = new QProcess(this);
+    connect(control, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_control(int, QProcess::ExitStatus)));
+    winetricks = new QProcess(this);
+    connect(winetricks, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_winetricks(int, QProcess::ExitStatus)));
+
     QDir dir = QDir::homePath() + "/.wine";
     if (dir.exists())
         ui->bottle->addItem("default");
@@ -25,24 +34,17 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
         if (!fileInfo.fileName().indexOf(".wine_")){
             ui->bottle->addItem(fileInfo.fileName().remove(".wine_"));
         }
-        else qDebug() << "Left directory:" << fileInfo.fileName();
     }
 
-    app = "wine \"";
-    bool execute = true;
-    foreach (auto str, args){
-        app += codec->fromUnicode(str);
-        if (execute){
-            app += "\"";
-            exeFile = QString(codec->fromUnicode(str));
-            execute = false;
-        } else ui->args->setText(ui->args->text() + " " + codec->fromUnicode(str));
-        app += " ";
+    if (!args.isEmpty()){
+        exeFile = args.at(0);
+        args.pop_front();
+        arguments = args;
     }
     if(exeFile.suffix().toLower() != "btl"){
-        qDebug() << "Application:" << app;
+        qDebug() << "Application:" << exeFile.fileName();
 
-        if (app == "wine \""){
+        if (!QFile::exists(exeFile.filePath())){
             ui->run->setEnabled(false);
             ui->save->setEnabled(false);
         }
@@ -50,7 +52,6 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
     } else {
         getBtl();
         exeFile = exeFile.fileName().remove(".btl");
-        app = "wine \"" + exeFile.fileName() + "\"" + ui->args->text();
     }
 
     if (QFile::exists("/usr/bin/winetricks"))
@@ -69,7 +70,13 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_run_clicked()
 {
-    exec(app);
+    QStringList args = QStringList(exeFile.filePath());
+    args << arguments;
+    exec("wine", args);
+    winecfg->kill();
+    regedit->kill();
+    control->kill();
+    winetricks->kill();
     this->close();
 }
 
@@ -83,48 +90,68 @@ void MainWindow::on_bottle_currentIndexChanged(const QString &arg1)
         ui->rem_bottle->setEnabled(true);
         ui->ren_bottle->setEnabled(true);
     }
-    ui->save->setEnabled(true);
+    if (ui->run->isEnabled())
+        ui->save->setEnabled(true);
+
 }
 
 void MainWindow::on_winecfg_clicked()
 {
-    exec("winecfg");
+    winecfg->setEnvironment(getEnvironments());
+    winecfg->setProgram("winecfg");
+    winecfg->start();
+    ui->winecfg->setEnabled(false);
+    toggleControls(false);
 }
 
 void MainWindow::on_regedit_clicked()
 {
-    exec("wine regedit");
+    regedit->setEnvironment(getEnvironments());
+    regedit->setProgram("wine");
+    regedit->setArguments(QStringList("regedit"));
+    regedit->start();
+    ui->regedit->setEnabled(false);
+    toggleControls(false);
 }
 
 void MainWindow::on_control_clicked()
 {
-    exec("wine control");
+    control->setEnvironment(getEnvironments());
+    control->setProgram("wine");
+    control->setArguments(QStringList("control"));
+    control->start();
+    ui->control->setEnabled(false);
+    toggleControls(false);
 }
 
 void MainWindow::on_winetricks_clicked()
 {
-    exec("winetricks");
+    winetricks->setEnvironment(getEnvironments());
+    winetricks->setProgram("winetricks");
+    winetricks->start();
+    ui->winetricks->setEnabled(false);
+    toggleControls(false);
 }
 
-QString MainWindow::getPrefix()
+QStringList MainWindow::getEnvironments()
 {
-    QString command = "export WINEPREFIX=" + QDir::homePath();
+    QStringList env = QProcess::systemEnvironment();
+    QString prefix = "WINEPREFIX=" + QDir::homePath();
     if (bottle == "default")
-        command += "/.wine\n";
-    else command += "/.wine_" + bottle + "\n";
-    return command;
+        prefix += "/.wine";
+    else prefix += "/.wine_" + bottle;
+    env << prefix;
+    return env;
 }
 
-void thrExec(QString exe)
+void MainWindow::exec(QString exe, QStringList args)
 {
-    system(exe.toStdString().c_str());
-}
-
-void MainWindow::exec(QString exe)
-{
-    qDebug() << "exec(" << getPrefix() + exe << ");";
-    std::thread thread(thrExec, getPrefix() + exe);
-    thread.detach();
+    QProcess *proc = new QProcess(nullptr);
+    proc->setEnvironment(getEnvironments());
+    proc->setProgram(exe);
+    proc->setArguments(args);
+    proc->start();
+    proc->waitForStarted();
 }
 
 void MainWindow::getBtl()
@@ -159,6 +186,33 @@ void MainWindow::getBtl()
     delete[] value;
 
     btlFile.close();
+}
+
+void MainWindow::toggleControls(bool toggle)
+{
+    if (!toggle){
+        ui->bottle->setEnabled(false);
+        ui->new_bottle->setEnabled(false);
+        ui->rem_bottle->setEnabled(false);
+        ui->ren_bottle->setEnabled(false);
+    } else {
+        if (!ui->winecfg->isEnabled())
+            return;
+        if (!ui->regedit->isEnabled())
+            return;
+        if (!ui->control->isEnabled())
+            return;
+        if (!ui->winetricks->isEnabled())
+            return;
+
+        ui->bottle->setEnabled(true);
+        ui->new_bottle->setEnabled(true);
+
+        if (bottle != "default"){
+            ui->rem_bottle->setEnabled(true);
+            ui->ren_bottle->setEnabled(true);
+        }
+    }
 }
 
 bool MainWindow::loadBtl()
@@ -205,7 +259,7 @@ void MainWindow::on_select_clicked()
     if (QFile::exists(exe)){
         exeFile = exe;
 
-        app += exe + "\" " + ui->args->text();
+        arguments = ui->args->text().split(" ");
         ui->run->setEnabled(true);
         ui->save->setEnabled(true);
         ui->select->setEnabled(false);
@@ -217,8 +271,8 @@ void MainWindow::on_ren_bottle_clicked()
     RenameBottle rn(bottle, this);
     rn.exec();
     if (!rn.getName().isEmpty()){
-        QString command = "mv ~/.wine_" + bottle + " ~/.wine_" + rn.getName();
-        system(command.toStdString().c_str());
+        QDir dir(QDir::homePath());
+        dir.rename(".wine_" + bottle, ".wine_" + rn.getName());
         bottle = rn.getName();
         ui->bottle->setItemText(ui->bottle->currentIndex(), bottle);
     }
@@ -226,16 +280,19 @@ void MainWindow::on_ren_bottle_clicked()
 
 void MainWindow::on_rem_bottle_clicked()
 {
-    QString command = "rm -rf ~/.wine_" + bottle;
-    system(command.toStdString().c_str());
-    ui->bottle->removeItem(ui->bottle->currentIndex());
-    bottle = ui->bottle->currentText();
+    QDir dir(QDir::homePath() + "/.wine_" + bottle);
+    if (dir.removeRecursively()){
+        ui->bottle->removeItem(ui->bottle->currentIndex());
+        bottle = ui->bottle->currentText();
+    } else qDebug() << "Can't remove bottle" << bottle;
 }
 
 void MainWindow::on_new_bottle_clicked()
 {
+    this->setEnabled(false);
     NewBottle btl(ui->bottle, this);
     btl.exec();
+    this->setEnabled(true);
 }
 
 void MainWindow::on_save_clicked()
@@ -266,7 +323,32 @@ void MainWindow::on_save_clicked()
     ui->save->setEnabled(false);
 }
 
-void MainWindow::on_args_textChanged(const QString &arg1)
+void MainWindow::on_args_textChanged(const QString &)
 {
-    ui->save->setEnabled(true);
+    if (ui->run->isEnabled())
+        ui->save->setEnabled(true);
+}
+
+void MainWindow::finished_winecfg(int, QProcess::ExitStatus)
+{
+    ui->winecfg->setEnabled(true);
+    toggleControls(true);
+}
+
+void MainWindow::finished_regedit(int , QProcess::ExitStatus )
+{
+    ui->regedit->setEnabled(true);
+    toggleControls(true);
+}
+
+void MainWindow::finished_control(int, QProcess::ExitStatus)
+{
+    ui->control->setEnabled(true);
+    toggleControls(true);
+}
+
+void MainWindow::finished_winetricks(int , QProcess::ExitStatus )
+{
+    ui->winetricks->setEnabled(true);
+    toggleControls(true);
 }

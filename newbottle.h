@@ -4,6 +4,7 @@
 #include <QDialog>
 #include <QDir>
 #include <QComboBox>
+#include <QProcess>
 
 namespace Ui {
 class NewBottle;
