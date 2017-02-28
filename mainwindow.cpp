@@ -242,12 +242,14 @@ bool MainWindow::loadBtl()
     value = new char[len + 1];
     btlFile.read(value, len);
     value[len] = 0;
-    QString args = codec->toUnicode(value);
+    arguments = QStringList(codec->toUnicode(value));
     delete[] value;
 
     btlFile.close();
     qDebug() << "btl is loaded";
-    exec("wine \"" + exeFile.filePath() + "\" " + args);
+    QStringList args = QStringList(exeFile.filePath());
+    args << arguments;
+    exec("wine", args);
     return true;
 }
 
