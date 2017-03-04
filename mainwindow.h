@@ -25,6 +25,9 @@ public:
 
     bool loadBtl();
 
+protected:
+    void closeEvent(QCloseEvent * e);
+
 private slots:
     void on_run_clicked();
     void on_bottle_currentIndexChanged(const QString &arg1);

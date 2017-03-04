@@ -36,7 +36,10 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
         if (fileInfo.isFile())
             continue;
         if (!fileInfo.fileName().indexOf(".wine_")){
-            ui->bottle->addItem(fileInfo.fileName().remove(".wine_"));
+            QString bottleName = fileInfo.fileName().remove(".wine_");
+            ui->bottle->addItem(bottleName);
+            if (bottleName == sets->value("lastBottle").toString())
+                ui->bottle->setCurrentIndex(ui->bottle->count() - 1);
         }
     }
 
@@ -282,6 +285,16 @@ bool MainWindow::loadBtl()
     args << arguments;
     exec(path + "wine", args);
     return true;
+}
+
+void MainWindow::closeEvent(QCloseEvent *e)
+{
+    sets->setValue("lastBottle", bottle);
+
+    winecfg->kill();
+    regedit->kill();
+    control->kill();
+    winetricks->kill();
 }
 
 void MainWindow::on_select_clicked()
