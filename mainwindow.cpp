@@ -145,6 +145,11 @@ QStringList MainWindow::getEnvironments()
         prefix += "/.wine";
     else prefix += "/.wine_" + bottle;
     env << prefix;
+    env << "WINE=" + sets->value(bottle + "/path").toString() + "wine";
+    env << "REGEDIT" + sets->value(bottle + "/path").toString() + "regedit";
+    env << "CONSOLE=" + sets->value(bottle + "/path").toString() + "wineconsole";
+    env << "WINEFILE=" + sets->value(bottle + "/path").toString() + "winefile";
+    env << "WINEBOOT=" + sets->value(bottle + "/path").toString() + "wineboot";
     return env;
 }
 

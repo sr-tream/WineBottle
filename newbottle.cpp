@@ -23,11 +23,16 @@ void NewBottle::on_buttonBox_accepted()
         if (bottle->itemText(i) == bottleName)
             return;
     bottle->addItem(bottleName);
+    sets->setValue(bottleName + "/path", path);
 
     QStringList env = QProcess::systemEnvironment();
     env << "WINEARCH=win" + ui->arch->currentText();
     env << "WINEPREFIX=" + QDir::homePath() + "/.wine_" + bottleName;
-    sets->setValue(bottleName + "/path", path);
+    env << "WINE=" + sets->value(bottleName + "/path").toString() + "wine";
+    env << "REGEDIT" + sets->value(bottleName + "/path").toString() + "regedit";
+    env << "CONSOLE=" + sets->value(bottleName + "/path").toString() + "wineconsole";
+    env << "WINEFILE=" + sets->value(bottleName + "/path").toString() + "winefile";
+    env << "WINEBOOT=" + sets->value(bottleName + "/path").toString() + "wineboot";
 
     QProcess *proc = new QProcess(this);
     proc->setEnvironment(env);
