@@ -6,7 +6,7 @@ NewBottle::NewBottle(QComboBox *bottle, QSettings *sets, QWidget *parent) :
     ui(new Ui::NewBottle)
 {
     ui->setupUi(this);
-    path = sets->value("path").toString();
+    path = sets->value("default/path").toString();
     this->sets = sets;
     this->bottle = bottle;
 }
