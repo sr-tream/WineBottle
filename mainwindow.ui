@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>383</width>
+    <width>388</width>
     <height>151</height>
    </rect>
   </property>
@@ -68,6 +68,13 @@
         </item>
         <item>
          <widget class="QLineEdit" name="args"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushBwinePathutton">
+          <property name="text">
+           <string>wine path</string>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>

@@ -20,6 +20,10 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
     winetricks = new QProcess(this);
     connect(winetricks, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_winetricks(int, QProcess::ExitStatus)));
 
+    sets = new QSettings(QDir::homePath() + "/.config/WineBottle", QSettings::IniFormat, this);
+    if (sets->value("path").toString().isEmpty())
+        sets->setValue("path", "/usr/bin/");
+
     QDir dir = QDir::homePath() + "/.wine";
     if (dir.exists())
         ui->bottle->addItem("default");
@@ -72,7 +76,7 @@ void MainWindow::on_run_clicked()
 {
     QStringList args = QStringList(exeFile.filePath());
     args << arguments;
-    exec("wine", args);
+    exec(sets->value("path").toString() + "wine", args);
     winecfg->kill();
     regedit->kill();
     control->kill();
@@ -98,7 +102,7 @@ void MainWindow::on_bottle_currentIndexChanged(const QString &arg1)
 void MainWindow::on_winecfg_clicked()
 {
     winecfg->setEnvironment(getEnvironments());
-    winecfg->setProgram("winecfg");
+    winecfg->setProgram(sets->value("path").toString() + "winecfg");
     winecfg->start();
     ui->winecfg->setEnabled(false);
     toggleControls(false);
@@ -107,7 +111,7 @@ void MainWindow::on_winecfg_clicked()
 void MainWindow::on_regedit_clicked()
 {
     regedit->setEnvironment(getEnvironments());
-    regedit->setProgram("wine");
+    regedit->setProgram(sets->value("path").toString() + "wine");
     regedit->setArguments(QStringList("regedit"));
     regedit->start();
     ui->regedit->setEnabled(false);
@@ -117,7 +121,7 @@ void MainWindow::on_regedit_clicked()
 void MainWindow::on_control_clicked()
 {
     control->setEnvironment(getEnvironments());
-    control->setProgram("wine");
+    control->setProgram(sets->value("path").toString() + "wine");
     control->setArguments(QStringList("control"));
     control->start();
     ui->control->setEnabled(false);
@@ -185,6 +189,16 @@ void MainWindow::getBtl()
     ui->args->setText(args);
     delete[] value;
 
+    if (!btlFile.atEnd()){
+        btlFile.read((char*)&len, 4);
+        value = new char[len + 1];
+        btlFile.read(value, len);
+        value[len] = 0;
+        sets->setValue("path", codec->toUnicode(value));
+        delete[] value;
+        qDebug() << "try load wine path from btl";
+    }
+
     btlFile.close();
 }
 
@@ -245,11 +259,23 @@ bool MainWindow::loadBtl()
     arguments = QStringList(codec->toUnicode(value));
     delete[] value;
 
+    QString path;
+    if (!btlFile.atEnd()){
+        btlFile.read((char*)&len, 4);
+        value = new char[len + 1];
+        btlFile.read(value, len);
+        value[len] = 0;
+        path = codec->toUnicode(value);
+        delete[] value;
+        qDebug() << "load wine path from btl";
+    }
+    else path = sets->value("path").toString();
+
     btlFile.close();
     qDebug() << "btl is loaded";
     QStringList args = QStringList(exeFile.filePath());
     args << arguments;
-    exec("wine", args);
+    exec(path + "wine", args);
     return true;
 }
 
@@ -320,6 +346,10 @@ void MainWindow::on_save_clicked()
     btlFile.write((const char*)&len, 4);
     btlFile.write(codec->fromUnicode(ui->args->text()).toStdString().c_str(), len);
 
+    len = sets->value("path").toString().length();
+    btlFile.write((const char*)&len, 4);
+    btlFile.write(codec->fromUnicode(sets->value("path").toString()).toStdString().c_str(), len);
+
     btlFile.close();
     qDebug() << "btl is saved";
     ui->save->setEnabled(false);
@@ -353,4 +383,13 @@ void MainWindow::finished_winetricks(int , QProcess::ExitStatus )
 {
     ui->winetricks->setEnabled(true);
     toggleControls(true);
+}
+
+void MainWindow::on_pushBwinePathutton_clicked()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), sets->value("path").toString(),
+                                                    QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks) + "/";
+    qDebug() << "Selected dir:" << dir;
+    if (QFile::exists(dir + "wine"))
+        sets->setValue("path", dir);
 }

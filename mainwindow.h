@@ -8,6 +8,8 @@
 #include <QFileDialog>
 #include <QTextCodec>
 #include <QProcess>
+#include <QSettings>
+#include <QMessageBox>
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +39,8 @@ private slots:
     void on_save_clicked();
     void on_args_textChanged(const QString &);
 
+    void on_pushBwinePathutton_clicked();
+
 signals:
 public slots:
     void finished_winecfg(int , QProcess::ExitStatus );
@@ -47,6 +51,7 @@ public slots:
 private:
     Ui::MainWindow *ui;
     QTextCodec *codec;
+    QSettings *sets;
 
     QProcess *winecfg;
     QProcess *regedit;
