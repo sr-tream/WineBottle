@@ -69,13 +69,6 @@
         <item>
          <widget class="QLineEdit" name="args"/>
         </item>
-        <item>
-         <widget class="QPushButton" name="pushBwinePathutton">
-          <property name="text">
-           <string>wine path</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </item>
       <item>
@@ -140,6 +133,13 @@
          <widget class="QPushButton" name="ren_bottle">
           <property name="text">
            <string>rename bottle</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pushBwinePathutton">
+          <property name="text">
+           <string>wine path</string>
           </property>
          </widget>
         </item>

@@ -21,8 +21,8 @@ MainWindow::MainWindow(QStringList args, QWidget *parent) :
     connect(winetricks, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(finished_winetricks(int, QProcess::ExitStatus)));
 
     sets = new QSettings(QDir::homePath() + "/.config/WineBottle", QSettings::IniFormat, this);
-    if (sets->value("path").toString().isEmpty())
-        sets->setValue("path", "/usr/bin/");
+    if (sets->value("default/path").toString().isEmpty())
+        sets->setValue("default/path", "/usr/bin/");
 
     QDir dir = QDir::homePath() + "/.wine";
     if (dir.exists())
@@ -76,7 +76,7 @@ void MainWindow::on_run_clicked()
 {
     QStringList args = QStringList(exeFile.filePath());
     args << arguments;
-    exec(sets->value("path").toString() + "wine", args);
+    exec(sets->value(bottle + "/path").toString() + "wine", args);
     winecfg->kill();
     regedit->kill();
     control->kill();
@@ -102,7 +102,7 @@ void MainWindow::on_bottle_currentIndexChanged(const QString &arg1)
 void MainWindow::on_winecfg_clicked()
 {
     winecfg->setEnvironment(getEnvironments());
-    winecfg->setProgram(sets->value("path").toString() + "winecfg");
+    winecfg->setProgram(sets->value(bottle + "/path").toString() + "winecfg");
     winecfg->start();
     ui->winecfg->setEnabled(false);
     toggleControls(false);
@@ -111,7 +111,7 @@ void MainWindow::on_winecfg_clicked()
 void MainWindow::on_regedit_clicked()
 {
     regedit->setEnvironment(getEnvironments());
-    regedit->setProgram(sets->value("path").toString() + "wine");
+    regedit->setProgram(sets->value(bottle + "/path").toString() + "wine");
     regedit->setArguments(QStringList("regedit"));
     regedit->start();
     ui->regedit->setEnabled(false);
@@ -121,7 +121,7 @@ void MainWindow::on_regedit_clicked()
 void MainWindow::on_control_clicked()
 {
     control->setEnvironment(getEnvironments());
-    control->setProgram(sets->value("path").toString() + "wine");
+    control->setProgram(sets->value(bottle + "/path").toString() + "wine");
     control->setArguments(QStringList("control"));
     control->start();
     ui->control->setEnabled(false);
@@ -194,7 +194,7 @@ void MainWindow::getBtl()
         value = new char[len + 1];
         btlFile.read(value, len);
         value[len] = 0;
-        sets->setValue("path", codec->toUnicode(value));
+        sets->setValue(bottle + "/path", codec->toUnicode(value));
         delete[] value;
         qDebug() << "try load wine path from btl";
     }
@@ -269,7 +269,7 @@ bool MainWindow::loadBtl()
         delete[] value;
         qDebug() << "load wine path from btl";
     }
-    else path = sets->value("path").toString();
+    else path = sets->value(bottle + "/path").toString();
 
     btlFile.close();
     qDebug() << "btl is loaded";
@@ -318,7 +318,7 @@ void MainWindow::on_rem_bottle_clicked()
 void MainWindow::on_new_bottle_clicked()
 {
     this->setEnabled(false);
-    NewBottle btl(ui->bottle, this);
+    NewBottle btl(ui->bottle, sets, this);
     btl.exec();
     this->setEnabled(true);
 }
@@ -346,9 +346,9 @@ void MainWindow::on_save_clicked()
     btlFile.write((const char*)&len, 4);
     btlFile.write(codec->fromUnicode(ui->args->text()).toStdString().c_str(), len);
 
-    len = sets->value("path").toString().length();
+    len = sets->value(bottle + "/path").toString().length();
     btlFile.write((const char*)&len, 4);
-    btlFile.write(codec->fromUnicode(sets->value("path").toString()).toStdString().c_str(), len);
+    btlFile.write(codec->fromUnicode(sets->value(bottle + "/path").toString()).toStdString().c_str(), len);
 
     btlFile.close();
     qDebug() << "btl is saved";
@@ -387,9 +387,9 @@ void MainWindow::finished_winetricks(int , QProcess::ExitStatus )
 
 void MainWindow::on_pushBwinePathutton_clicked()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Open Directory"), sets->value("path").toString(),
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), sets->value(bottle + "/path").toString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks) + "/";
     qDebug() << "Selected dir:" << dir;
     if (QFile::exists(dir + "wine"))
-        sets->setValue("path", dir);
+        sets->setValue(bottle + "/path", dir);
 }
