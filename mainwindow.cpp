@@ -319,6 +319,8 @@ void MainWindow::on_ren_bottle_clicked()
     if (!rn.getName().isEmpty()){
         QDir dir(QDir::homePath());
         dir.rename(".wine_" + bottle, ".wine_" + rn.getName());
+        sets->setValue(rn.getName() + "/path", sets->value(bottle + "/path").toString());
+        sets->remove(bottle + "/path");
         bottle = rn.getName();
         ui->bottle->setItemText(ui->bottle->currentIndex(), bottle);
     }
