@@ -23,6 +23,7 @@ void NewBottle::on_buttonBox_accepted()
         if (bottle->itemText(i) == bottleName)
             return;
     bottle->addItem(bottleName);
+    bottle->setCurrentIndex(bottle->count() - 1);
     sets->setValue(bottleName + "/path", path);
 
     QStringList env = QProcess::systemEnvironment();
@@ -45,8 +46,10 @@ void NewBottle::on_buttonBox_accepted()
 
 void NewBottle::on_toolButton_clicked()
 {
-    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), sets->value("path").toString(),
+    QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), sets->value("default/path").toString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks) + "/";
-    if (QFile::exists(dir + "wine"))
+    if (QFile::exists(dir + "wine")){
         path = dir;
+        ui->path->setText(path);
+    }
 }

@@ -41,8 +41,7 @@ private slots:
     void on_new_bottle_clicked();
     void on_save_clicked();
     void on_args_textChanged(const QString &);
-
-    void on_pushBwinePathutton_clicked();
+    void on_winePath_clicked();
 
 signals:
 public slots:

@@ -217,6 +217,7 @@ void MainWindow::toggleControls(bool toggle)
         ui->new_bottle->setEnabled(false);
         ui->rem_bottle->setEnabled(false);
         ui->ren_bottle->setEnabled(false);
+        ui->winePath->setEnabled(false);
     } else {
         if (!ui->winecfg->isEnabled())
             return;
@@ -229,6 +230,7 @@ void MainWindow::toggleControls(bool toggle)
 
         ui->bottle->setEnabled(true);
         ui->new_bottle->setEnabled(true);
+        ui->winePath->setEnabled(true);
 
         if (bottle != "default"){
             ui->rem_bottle->setEnabled(true);
@@ -405,7 +407,7 @@ void MainWindow::finished_winetricks(int , QProcess::ExitStatus )
     toggleControls(true);
 }
 
-void MainWindow::on_pushBwinePathutton_clicked()
+void MainWindow::on_winePath_clicked()
 {
     QString dir = QFileDialog::getExistingDirectory(this, tr("Select Directory"), sets->value(bottle + "/path").toString(),
                                                     QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks) + "/";
