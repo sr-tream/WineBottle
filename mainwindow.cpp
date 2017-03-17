@@ -135,6 +135,7 @@ void MainWindow::on_winetricks_clicked()
 {
     winetricks->setEnvironment(getEnvironments());
     winetricks->setProgram("winetricks");
+    winetricks->setArguments(QStringList("--gui"));
     winetricks->start();
     ui->winetricks->setEnabled(false);
     toggleControls(false);
