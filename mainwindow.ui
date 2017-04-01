@@ -55,6 +55,19 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="logging">
+          <property name="maximumSize">
+           <size>
+            <width>75</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>logging</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item>

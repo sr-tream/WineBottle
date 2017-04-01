@@ -65,7 +65,7 @@ private:
     QStringList arguments;
 
     QStringList getEnvironments();
-    void exec(QString exe, QStringList args = QStringList());
+    void exec(QString exe, QStringList args = QStringList(), QString log = QString());
     void getBtl();
     void toggleControls(bool toggle);
 };

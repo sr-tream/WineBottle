@@ -79,7 +79,9 @@ void MainWindow::on_run_clicked()
 {
     QStringList args = QStringList(exeFile.filePath());
     args << arguments;
-    exec(sets->value(bottle + "/path").toString() + "wine", args);
+    if (ui->logging->isChecked() )
+        exec(sets->value(bottle + "/path").toString() + "wine", args, exeFile.filePath() + ".log");
+    else exec(sets->value(bottle + "/path").toString() + "wine", args);
     winecfg->kill();
     regedit->kill();
     control->kill();
@@ -157,12 +159,16 @@ QStringList MainWindow::getEnvironments()
     return env;
 }
 
-void MainWindow::exec(QString exe, QStringList args)
+void MainWindow::exec(QString exe, QStringList args, QString log)
 {
     QProcess *proc = new QProcess(nullptr);
     proc->setEnvironment(getEnvironments());
     proc->setProgram(exe);
     proc->setArguments(args);
+    if (!log.isEmpty()){
+        proc->setStandardOutputFile(log);
+        proc->setStandardErrorFile(log + "_error");
+    }
     proc->start();
     proc->waitForStarted();
 }
@@ -206,6 +212,11 @@ void MainWindow::getBtl()
         sets->setValue(bottle + "/path", codec->toUnicode(value));
         delete[] value;
         qDebug() << "try load wine path from btl";
+        if (!btlFile.atEnd()){
+            bool log = false;
+            btlFile.read((char*)&log, 1);
+            ui->logging->setChecked(log);;
+        }
     }
 
     btlFile.close();
@@ -271,6 +282,7 @@ bool MainWindow::loadBtl()
     delete[] value;
 
     QString path;
+    bool log = false;
     if (!btlFile.atEnd()){
         btlFile.read((char*)&len, 4);
         value = new char[len + 1];
@@ -279,6 +291,9 @@ bool MainWindow::loadBtl()
         path = codec->toUnicode(value);
         delete[] value;
         qDebug() << "load wine path from btl";
+        if (!btlFile.atEnd()){
+            btlFile.read((char*)&log, 1);
+        }
     }
     else path = sets->value(bottle + "/path").toString();
 
@@ -286,7 +301,9 @@ bool MainWindow::loadBtl()
     qDebug() << "btl is loaded";
     QStringList args = QStringList(exeFile.filePath());
     args << arguments;
-    exec(path + "wine", args);
+    if (log)
+        exec(path + "wine", args, exeFile.filePath() + ".log");
+    else exec(path + "wine", args);
     return true;
 }
 
@@ -372,6 +389,9 @@ void MainWindow::on_save_clicked()
     len = sets->value(bottle + "/path").toString().length();
     btlFile.write((const char*)&len, 4);
     btlFile.write(codec->fromUnicode(sets->value(bottle + "/path").toString()).toStdString().c_str(), len);
+
+    bool log = ui->logging->isChecked();
+    btlFile.write((const char*)&log, 1);
 
     btlFile.close();
     qDebug() << "btl is saved";
