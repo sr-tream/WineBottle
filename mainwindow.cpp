@@ -77,7 +77,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_run_clicked()
 {
-    QStringList args = QStringList(exeFile.filePath());
+    QStringList args;
+    if (exeFile.suffix() == "msi"){
+        args << "msiexec";
+        args << "/i";
+    }
+    args << exeFile.filePath();
     args << arguments;
     if (ui->logging->isChecked() )
         exec(sets->value(bottle + "/path").toString() + "wine", args, exeFile.filePath() + ".log");
@@ -205,18 +210,9 @@ void MainWindow::getBtl()
     delete[] value;
 
     if (!btlFile.atEnd()){
-        btlFile.read((char*)&len, 4);
-        value = new char[len + 1];
-        btlFile.read(value, len);
-        value[len] = 0;
-        sets->setValue(bottle + "/path", codec->toUnicode(value));
-        delete[] value;
-        qDebug() << "try load wine path from btl";
-        if (!btlFile.atEnd()){
-            bool log = false;
-            btlFile.read((char*)&log, 1);
-            ui->logging->setChecked(log);;
-        }
+        bool log = false;
+        btlFile.read((char*)&log, 1);
+        ui->logging->setChecked(log);
     }
 
     btlFile.close();
@@ -284,26 +280,17 @@ bool MainWindow::loadBtl()
     QString path;
     bool log = false;
     if (!btlFile.atEnd()){
-        btlFile.read((char*)&len, 4);
-        value = new char[len + 1];
-        btlFile.read(value, len);
-        value[len] = 0;
-        path = codec->toUnicode(value);
-        delete[] value;
-        qDebug() << "load wine path from btl";
-        if (!btlFile.atEnd()){
-            btlFile.read((char*)&log, 1);
-        }
+         btlFile.read((char*)&log, 1);
     }
     else path = sets->value(bottle + "/path").toString();
 
     btlFile.close();
     qDebug() << "btl is loaded";
-    QStringList args = QStringList(exeFile.filePath());
-    args << arguments;
+
     if (log)
-        exec(path + "wine", args, exeFile.filePath() + ".log");
-    else exec(path + "wine", args);
+        ui->logging->setChecked(true);
+    on_run_clicked();
+
     return true;
 }
 
@@ -385,10 +372,6 @@ void MainWindow::on_save_clicked()
     len = ui->args->text().length();
     btlFile.write((const char*)&len, 4);
     btlFile.write(codec->fromUnicode(ui->args->text()).toStdString().c_str(), len);
-
-    len = sets->value(bottle + "/path").toString().length();
-    btlFile.write((const char*)&len, 4);
-    btlFile.write(codec->fromUnicode(sets->value(bottle + "/path").toString()).toStdString().c_str(), len);
 
     bool log = ui->logging->isChecked();
     btlFile.write((const char*)&log, 1);
