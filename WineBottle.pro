@@ -41,3 +41,6 @@ FORMS += \
     wbsettings.ui \
     wbcreate.ui \
     wbrename.ui
+
+RESOURCES += \
+    resources.qrc
