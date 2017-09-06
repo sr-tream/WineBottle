@@ -1,15 +1,11 @@
 # WineBottle
 The bottle manager for wine.
-Writed on Qt5
+Writed on C++ with Qt5
 
 ### Screensots
-![Alt text](https://dl.prime-hack.net/Screenshot_20170305_110742.png)
-![Alt text](https://dl.prime-hack.net/Screenshot_20170305_105046.png)
+![Alt text](http://imgur.com/9IouVLIl.png)
+![Alt text](http://imgur.com/SHSBfoCl.png)
+![Alt text](http://imgur.com/KAIY6ccl.png)
 
-## Features:
-* Easy select bottle before run programm
-* Create new bottle with custom arch and wine version
-* Insert arguments before run programm
-* Save run params in .btl file for further fast run
 
 #### Author: SR_team ©prime-hack.net
