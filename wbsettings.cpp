@@ -229,3 +229,13 @@ void WBSettings::on_bottle_delete_clicked()
     set->setValue("BottleCount", bottleCount);
     load();
 }
+
+void WBSettings::on_bottle_clone_clicked()
+{
+    QString lastBottle = "Bottle_" + QString::number(bottleCount);
+    bottleCount++;
+    set->setValue("BottleCount", bottleCount);
+    set->setValue(bottleName() + "/bottle", set->value(lastBottle + "/bottle").toString());
+    set->setValue(bottleName() + "/wine", set->value(lastBottle + "/wine").toString());
+    set->setValue(bottleName() + "/name", set->value(lastBottle + "/name").toString() + "_cloned");
+}
