@@ -5,7 +5,7 @@
 #include <QProcess>
 #include <QSettings>
 #include "wbcreate.h"
-#include "wbrename.h"
+#include "wbedit.h"
 
 class WBSettings : public QDialog, private Ui::WBSettings
 {
@@ -25,7 +25,7 @@ protected:
     virtual QString bottleName();
 private slots:
     void on_wbCreate(WBCreate*);
-    void on_wbRename(WBRename*);
+    void on_wbRename(WBEdit*);
 
     void on_bottles_currentTextChanged(const QString &currentText);
 
@@ -41,7 +41,7 @@ private slots:
 
     void on_bottle_new_clicked();
 
-    void on_bottle_rename_clicked();
+    void on_bottle_edit_clicked();
 
     void on_bottle_delete_clicked();
 
@@ -53,7 +53,7 @@ signals:
 private:
     QList<QProcess*>        plist;
     QList<WBCreate*>        clist;
-    QList<WBRename*>        rlist;
+    QList<WBEdit*>          elist;
     QSettings               *set = nullptr;
     quint32                 bottleCount;
     QMap<QString, quint32>  bottleNumber;

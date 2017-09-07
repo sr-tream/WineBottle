@@ -28,19 +28,19 @@ SOURCES += \
         wbgui.cpp \
     wbsettings.cpp \
     wbcreate.cpp \
-    wbrename.cpp
+    wbedit.cpp
 
 HEADERS += \
         wbgui.h \
     wbsettings.h \
     wbcreate.h \
-    wbrename.h
+    wbedit.h
 
 FORMS += \
         wbgui.ui \
     wbsettings.ui \
     wbcreate.ui \
-    wbrename.ui
+    wbedit.ui
 
 RESOURCES += \
     resources.qrc

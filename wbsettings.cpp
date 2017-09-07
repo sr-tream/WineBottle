@@ -75,13 +75,13 @@ bool WBSettings::event(QEvent *event)
                 c = nullptr;
             }
         }
-        for (auto &r : rlist){
-            if (r == nullptr)
+        for (auto &e : elist){
+            if (e == nullptr)
                 continue;
-            if (r->isHidden()){
-                rlist.removeOne(r);
-                delete r;
-                r = nullptr;
+            if (e->isHidden()){
+                elist.removeOne(e);
+                delete e;
+                e = nullptr;
             }
         }
         setBottleOpEnabled(false);
@@ -98,7 +98,7 @@ void WBSettings::setBottleOpEnabled(bool enabled)
     bottle_delete->setEnabled(enabled);
     bottle_explorer->setEnabled(enabled);
     bottle_regedit->setEnabled(enabled);
-    bottle_rename->setEnabled(enabled);
+    bottle_edit->setEnabled(enabled);
     bottle_winecfg->setEnabled(enabled);
     if (winetricks)
         bottle_winetricks->setEnabled(enabled);
@@ -131,7 +131,7 @@ void WBSettings::on_wbCreate(WBCreate *create)
     load();
 }
 
-void WBSettings::on_wbRename(WBRename *rename)
+void WBSettings::on_wbRename(WBEdit *rename)
 {
     load();
 }
@@ -203,12 +203,12 @@ void WBSettings::on_bottle_new_clicked()
     clist.push_back(create);
 }
 
-void WBSettings::on_bottle_rename_clicked()
+void WBSettings::on_bottle_edit_clicked()
 {
-    WBRename *rename = new WBRename(set, bottleNumber[bottles->currentItem()->text()], this);
-    connect(rename, &WBRename::onAccepted, this, &WBSettings::on_wbRename);
+    WBEdit *rename = new WBEdit(set, bottleNumber[bottles->currentItem()->text()], this);
+    connect(rename, &WBEdit::onAccepted, this, &WBSettings::on_wbRename);
     rename->show();
-    rlist.push_back(rename);
+    elist.push_back(rename);
 }
 
 void WBSettings::on_bottle_delete_clicked()

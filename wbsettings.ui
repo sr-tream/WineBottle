@@ -26,22 +26,22 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="bottle_edit">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Edit</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="bottle_clone">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="text">
           <string>Clone</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QPushButton" name="bottle_rename">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="text">
-          <string>Rename</string>
          </property>
         </widget>
        </item>
