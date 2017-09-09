@@ -1,7 +1,7 @@
 #include "wbgui.h"
 #include <QProcess>
 #include <QRegExp>
-#include <QDebug>
+#include <QMessageBox>
 
 WBGui::WBGui(QFileInfo file, QWidget *parent) :
     QWidget(parent)
@@ -112,6 +112,7 @@ void WBGui::loadProgramm()
 
     prog_name->setText(prog.fileName().remove("." + prog.suffix()));
     prog_run->setEnabled(true);
+    prog_desktop->setEnabled(true);
 
     QString appName = "Programm_" + prog.filePath().replace('/', '\\');
     QString bName = set->value(appName + "/Bottle").toString();
@@ -203,4 +204,49 @@ void WBGui::on_prog_run_clicked()
     proc->start();
     proc->waitForStarted();
     close();
+}
+
+void WBGui::on_prog_desktop_clicked()
+{
+    quint32 bottleId = bottleNumber[bottles->currentText()];
+    QString bName = "Bottle_" + QString::number(bottleId);
+    QString path = set->value(bName + "/wine").toString() + "bin/";
+    QString bottle = set->value(bName + "/bottle").toString();
+    QFile desktop(prog.filePath().replace(prog.suffix(), "desktop"));
+    desktop.open(QIODevice::WriteOnly);
+
+    desktop.write("[Desktop Entry]\n");
+    desktop.write("Type=Application\n");
+    desktop.write(QString("Name=" + prog.fileName() + "\n").toStdString().c_str());
+    desktop.write(QString("GenericName=" + prog.fileName() + "\n").toStdString().c_str());
+    desktop.write("Categories=Wine;WineBottle;\n");
+    desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' '" + path + "wine' ").toStdString().c_str());
+    if (hasDesktop->isChecked()){
+        QString dskName = prog.fileName().remove("." + prog.suffix());
+        QString virtualDesktop = "explorer /desktop=" + dskName + "," +
+                QString::number(desktop_X->value()) + "x" +
+                QString::number(desktop_Y->value()) + " ";
+        desktop.write(virtualDesktop.toStdString().c_str());
+    }
+    if (hasConsole->isChecked())
+        desktop.write("wineconsole ");
+    if (hasUAC->isChecked())
+        desktop.write("runas /trustlevel:0x20000 ");
+    desktop.write(QString("'" + prog.filePath() + "' ").toStdString().c_str());
+    if (!prog_args->text().isEmpty())
+        desktop.write(prog_args->text().toStdString().c_str());
+    if (hasLogging->isChecked())
+        desktop.write(QString(" &> '" + prog.filePath().replace(prog.suffix(), "winelog'")).toStdString().c_str());
+    desktop.write(QString("\nPath=" + prog.path() + "/\n").toStdString().c_str());
+    desktop.write("Icon=/usr/share/pixmaps/WineBottle.png\n");
+    desktop.write("Action=WineBottle;\n\n");
+    desktop.write("[Desktop Action WineBottle]\n");
+    desktop.write(QString("Path=/usr/bin/WineBottle '" + prog.filePath() + "'\n").toStdString().c_str());
+    desktop.write("Name=Open in WineBottle\n");
+    desktop.write("Icon=/usr/share/pixmaps/WineBottle.png\n");
+    desktop.close();
+
+    QMessageBox msg;
+    msg.setText(tr("Link has created"));
+    msg.exec();
 }

@@ -32,6 +32,8 @@ private slots:
 
     void on_prog_run_clicked();
 
+    void on_prog_desktop_clicked();
+
 private:
     WBSettings *wbset = nullptr;
     QSettings  *set   = nullptr;
