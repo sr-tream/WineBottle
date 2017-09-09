@@ -56,6 +56,7 @@ void WBCreate::on_buttonBox_accepted()
     QProcess proc;
     proc.setEnvironment(env);
     proc.setProgram(path + "wineboot");
+    proc.setArguments(QStringList("-i"));
     proc.start();
     proc.waitForStarted();
     proc.waitForFinished(-1);

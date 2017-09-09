@@ -47,6 +47,8 @@ private slots:
 
     void on_bottle_clone_clicked();
 
+    void on_bottle_reboot_clicked();
+
 signals:
     void onHide();
 

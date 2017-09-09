@@ -100,6 +100,7 @@ void WBSettings::setBottleOpEnabled(bool enabled)
     bottle_regedit->setEnabled(enabled);
     bottle_edit->setEnabled(enabled);
     bottle_winecfg->setEnabled(enabled);
+    bottle_reboot->setEnabled(enabled);
     if (winetricks)
         bottle_winetricks->setEnabled(enabled);
 }
@@ -223,6 +224,7 @@ void WBSettings::on_bottle_delete_clicked()
         set->setValue(bottleName() + "/bottle", set->value(lastBottle + "/bottle").toString());
         set->setValue(bottleName() + "/wine", set->value(lastBottle + "/wine").toString());
         set->setValue(bottleName() + "/name", set->value(lastBottle + "/name").toString());
+        set->remove(lastBottle);
     }
 
     bottleCount--;
@@ -238,4 +240,15 @@ void WBSettings::on_bottle_clone_clicked()
     set->setValue(bottleName() + "/bottle", set->value(lastBottle + "/bottle").toString() + "_cloned");
     set->setValue(bottleName() + "/wine", set->value(lastBottle + "/wine").toString());
     set->setValue(bottleName() + "/name", set->value(lastBottle + "/name").toString() + "_cloned");
+}
+
+void WBSettings::on_bottle_reboot_clicked()
+{
+    QString path = set->value(bottleName() + "/wine").toString() + "bin/";
+    QProcess *proc = new QProcess(this);
+    proc->setEnvironment(env());
+    proc->setProgram(path + "wineboot");
+    proc->setArguments(QStringList("-r"));
+    proc->start();
+    plist.push_back(proc);
 }
