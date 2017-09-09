@@ -241,7 +241,7 @@ void WBGui::on_prog_desktop_clicked()
     desktop.write("Icon=/usr/share/pixmaps/WineBottle.png\n");
     desktop.write("Actions=WineBottle;\n\n");
     desktop.write("[Desktop Action WineBottle]\n");
-    desktop.write(QString("Path=/usr/bin/WineBottle '" + prog.filePath() + "'\n").toStdString().c_str());
+    desktop.write(QString("Exec=/usr/bin/WineBottle '" + prog.filePath() + "'\n").toStdString().c_str());
     desktop.write("Name=Open in WineBottle\n");
     desktop.write("Icon=/usr/share/pixmaps/WineBottle.png\n");
     desktop.close();
