@@ -185,6 +185,10 @@ void WBGui::on_prog_run_clicked()
 		args << "runas";
 		args << "/trustlevel:0x20000";
 	}
+	if (prog.suffix().toLower() == "msi"){
+		args << "msiexec";
+		args << "/i";
+	}
 	args << prog.filePath();
 	if (!prog_args->text().isEmpty())
 		args << prog_args->text().split(" ");
