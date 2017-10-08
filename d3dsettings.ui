@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>D3DSettings</class>
+ <widget class="QDialog" name="D3DSettings">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>353</width>
+    <height>273</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Direct3D Settings</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="1" column="1">
+      <widget class="QCheckBox" name="alwaysOff">
+       <property name="whatsThis">
+        <string>Always offscreen</string>
+       </property>
+       <property name="text">
+        <string>AlwaysOffscreen</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="glsl">
+       <property name="whatsThis">
+        <string>GLSL shaders</string>
+       </property>
+       <property name="text">
+        <string>GLSL</string>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QCheckBox" name="sdo">
+       <property name="whatsThis">
+        <string>Strict draw ordering</string>
+       </property>
+       <property name="text">
+        <string>StrictDrawOrdering</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="csmt">
+       <property name="whatsThis">
+        <string>Command Stream Multithreading</string>
+       </property>
+       <property name="accessibleDescription">
+        <string/>
+       </property>
+       <property name="text">
+        <string>CSMT</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="multisampling">
+       <property name="whatsThis">
+        <string>Direct3D multisampling</string>
+       </property>
+       <property name="text">
+        <string>Multisampling</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QCheckBox" name="cfc">
+       <property name="whatsThis">
+        <string>Check float constants</string>
+       </property>
+       <property name="text">
+        <string>CheckFloatConstants</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <layout class="QFormLayout" name="formLayout_2">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_orm">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Offscreen rendering mode</string>
+       </property>
+       <property name="text">
+        <string>OffscreenRenderingMode:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="orm">
+       <item>
+        <property name="text">
+         <string>fbo</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>backbuffer</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <layout class="QFormLayout" name="formLayout_3">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_rtlm">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Render target lock mode</string>
+       </property>
+       <property name="text">
+        <string>RenderTargetLockMode:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="rtlm">
+       <item>
+        <property name="text">
+         <string>auto</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>disabled</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>readdraw</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>readtex</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>texdraw</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>textex</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <layout class="QFormLayout" name="formLayout_4">
+     <item row="0" column="1">
+      <widget class="QComboBox" name="ddr">
+       <item>
+        <property name="text">
+         <string>OpenGL</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GDI</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_ddr">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Direct draw renderer</string>
+       </property>
+       <property name="text">
+        <string>DirectDrawRenderer:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
+    <layout class="QFormLayout" name="formLayout_5">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_gsm">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Max shader model GS</string>
+       </property>
+       <property name="text">
+        <string>MaxShaderModelGS:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="gsm">
+       <property name="maximum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="1">
+    <layout class="QFormLayout" name="formLayout_6">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_psm">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Max shader model PS</string>
+       </property>
+       <property name="text">
+        <string>MaxShaderModelPS:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="psm">
+       <property name="maximum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="0">
+    <layout class="QFormLayout" name="formLayout_7">
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_vsm">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Max shader model VS</string>
+       </property>
+       <property name="text">
+        <string>MaxShaderModelVS:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="vsm">
+       <property name="maximum">
+        <number>5</number>
+       </property>
+       <property name="value">
+        <number>3</number>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="5" column="1">
+    <layout class="QFormLayout" name="formLayout">
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="vmem">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::PlusMinus</enum>
+       </property>
+       <property name="specialValueText">
+        <string>MB</string>
+       </property>
+       <property name="minimum">
+        <number>16</number>
+       </property>
+       <property name="maximum">
+        <number>8192</number>
+       </property>
+       <property name="singleStep">
+        <number>256</number>
+       </property>
+       <property name="value">
+        <number>512</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="cb_vmem">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="whatsThis">
+        <string>Tell Wine your video card RAM</string>
+       </property>
+       <property name="text">
+        <string>Video memory</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="6" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>D3DSettings</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>498</x>
+     <y>344</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>D3DSettings</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>566</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>cb_vmem</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>vmem</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>114</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>186</x>
+     <y>111</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

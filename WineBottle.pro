@@ -28,19 +28,22 @@ SOURCES += \
         wbgui.cpp \
     wbsettings.cpp \
     wbcreate.cpp \
-    wbedit.cpp
+    wbedit.cpp \
+    d3dsettings.cpp
 
 HEADERS += \
         wbgui.h \
     wbsettings.h \
     wbcreate.h \
-    wbedit.h
+    wbedit.h \
+    d3dsettings.h
 
 FORMS += \
         wbgui.ui \
     wbsettings.ui \
     wbcreate.ui \
-    wbedit.ui
+    wbedit.ui \
+    d3dsettings.ui
 
 RESOURCES += \
     resources.qrc
