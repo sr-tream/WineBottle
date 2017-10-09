@@ -1,6 +1,6 @@
 # WineBottle
 The bottle manager for wine.
-Writed on C++ with Qt5
+Writen in C++ using Qt5
 
 ### Screensots
 ![Alt text](https://i.imgur.com/HFlbJYf.png)
