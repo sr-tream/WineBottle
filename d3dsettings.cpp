@@ -41,7 +41,7 @@ bool D3DSettings::event(QEvent *event)
 	if (event->type() == QEvent::Show){
 		D3DParams = readRegFile(D3DSection);
 		csmt->setChecked(readDWord("csmt"));
-		glsl->setChecked(readString("UseGLSL") == "enabled");
+		glsl->setChecked(readString("UseGLSL") == "enabled" || readString("UseGLSL").isEmpty());
 		multisampling->setChecked(readString("Multisampling") == "enabled");
 		if (readString("OffscreenRenderingMode") == "fbo" || readString("OffscreenRenderingMode").isEmpty())
 			orm->setCurrentIndex(0);
