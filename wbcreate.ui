@@ -40,6 +40,29 @@
        <item row="0" column="1">
         <widget class="QLineEdit" name="bottle_name"/>
        </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="launcher">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>nvidia-xrun</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="cb_launcher">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Launcher:</string>
+         </property>
+        </widget>
+       </item>
       </layout>
      </item>
      <item>
@@ -152,5 +175,22 @@
   </layout>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>cb_launcher</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>launcher</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>79</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>117</x>
+     <y>45</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

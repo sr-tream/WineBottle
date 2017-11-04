@@ -169,8 +169,11 @@ void WBGui::on_prog_run_clicked()
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString path = set->value(bName + "/wine").toString() + "bin/";
 	QString bottle = set->value(bName + "/bottle").toString();
+	QString launcher = set->value(bName + "/launcher").toString();
 
 	QStringList args;
+	if (!launcher.isEmpty())
+		args << path + "wine";
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
 		QString desktop = "/desktop=" + dskName + "," +
@@ -202,7 +205,9 @@ void WBGui::on_prog_run_clicked()
 	env << "WINEBOOT=" + path + "wineboot";
 
 	QProcess *proc = new QProcess(nullptr);
-	proc->setProgram(path + "wine");
+	if (launcher.isEmpty())
+		proc->setProgram(path + "wine");
+	else proc->setProgram(launcher);
 	proc->setArguments(args);
 	proc->setEnvironment(env);
 	if (hasLogging->isChecked())
@@ -219,6 +224,7 @@ void WBGui::on_prog_desktop_clicked()
 	QString path = set->value(bName + "/wine").toString() + "bin/";
 	QString bottle = set->value(bName + "/bottle").toString();
 	QFile desktop(prog.filePath().replace(prog.suffix(), "desktop"));
+	QString launcher = set->value(bName + "/launcher").toString();
 	desktop.open(QIODevice::WriteOnly);
 
 	desktop.write("[Desktop Entry]\n");
@@ -226,7 +232,7 @@ void WBGui::on_prog_desktop_clicked()
 	desktop.write(QString("Name=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write(QString("GenericName=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write("Categories=Wine;WineBottle;\n");
-	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' '" + path + "wine' ").toStdString().c_str());
+	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' " + launcher + " '" + path + "wine' ").toStdString().c_str());
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
 		QString virtualDesktop = "explorer /desktop=" + dskName + "," +
