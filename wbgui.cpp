@@ -174,8 +174,6 @@ void WBGui::on_prog_run_clicked()
 	QString launcher = set->value(bName + "/launcher").toString();
 
 	QStringList args;
-	if (!launcher.isEmpty())
-		args << path + "wine";
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
 		QString desktop = "/desktop=" + dskName + "," +
@@ -211,10 +209,14 @@ void WBGui::on_prog_run_clicked()
 		env << "vblank_mode=0";
 	}
 
+	if (!launcher.isEmpty())
+		QMessageBox::warning(this, "!!!WarninG!!!",
+							 "Launcher can be used only from link!\n"
+							 "You can must create link in WineBottle.\n\n"
+							 "Programm started without launcher");
+
 	QProcess *proc = new QProcess(nullptr);
-	if (launcher.isEmpty())
-		proc->setProgram(path + "wine");
-	else proc->setProgram(launcher);
+	proc->setProgram(path + "wine");
 	proc->setArguments(args);
 	proc->setEnvironment(env);
 	if (hasLogging->isChecked())

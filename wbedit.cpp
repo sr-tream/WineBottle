@@ -11,6 +11,8 @@ WBEdit::WBEdit(QSettings *set, qint32 id, QWidget *parent) :
 	bottleName->setText(set->value("Bottle_" + QString::number(bottleId) + "/name").toString());
 	bottlePath->setText(set->value("Bottle_" + QString::number(bottleId) + "/bottle").toString());
 	winePath->setText(set->value("Bottle_" + QString::number(bottleId) + "/wine").toString());
+	launcher->setText(set->value("Bottle_" + QString::number(bottleId) + "/launcher").toString());
+	cb_launcher->setChecked(!launcher->text().isEmpty());
 }
 
 void WBEdit::changeEvent(QEvent *e)
