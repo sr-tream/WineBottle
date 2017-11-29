@@ -46,6 +46,7 @@ void WBGui::closeEvent(QCloseEvent *event)
 	set->setValue(appName + "/Logging", hasLogging->isChecked());
 	set->setValue(appName + "/UAC",     hasUAC->isChecked());
 	set->setValue(appName + "/Console", hasConsole->isChecked());
+	set->setValue(appName + "/NoVSync", noVSync->isChecked());
 	set->setValue(appName + "/Window",  hasDesktop->isChecked());
 	set->setValue(appName + "/WinX",    desktop_X->value());
 	set->setValue(appName + "/WinY",    desktop_Y->value());
@@ -125,6 +126,7 @@ void WBGui::loadProgramm()
 	hasLogging->setChecked(set->value(appName + "/Logging").toBool());
 	hasUAC->setChecked(    set->value(appName + "/UAC").toBool());
 	hasConsole->setChecked(set->value(appName + "/Console").toBool());
+	noVSync->setChecked(set->value(appName + "/NoVSync").toBool());
 	hasDesktop->setChecked(set->value(appName + "/Window").toBool());
 	desktop_X->setValue(   set->value(appName + "/WinX").toUInt());
 	desktop_Y->setValue(   set->value(appName + "/WinY").toUInt());
@@ -204,6 +206,11 @@ void WBGui::on_prog_run_clicked()
 	env << "WINEFILE=" + path + "winefile";
 	env << "WINEBOOT=" + path + "wineboot";
 
+	if (noVSync->isChecked()){
+		env << "__GL_SYNC_TO_VBLANK=0";
+		env << "vblank_mode=0";
+	}
+
 	QProcess *proc = new QProcess(nullptr);
 	if (launcher.isEmpty())
 		proc->setProgram(path + "wine");
@@ -225,6 +232,10 @@ void WBGui::on_prog_desktop_clicked()
 	QString bottle = set->value(bName + "/bottle").toString();
 	QFile desktop(prog.filePath().replace(prog.suffix(), "desktop"));
 	QString launcher = set->value(bName + "/launcher").toString();
+	QString vsync = "vblank_mode=1 __GL_SYNC_TO_VBLANK=1";
+	if (noVSync->isChecked()){
+		vsync = "vblank_mode=0 __GL_SYNC_TO_VBLANK=0";
+	}
 	desktop.open(QIODevice::WriteOnly);
 
 	desktop.write("[Desktop Entry]\n");
@@ -232,7 +243,7 @@ void WBGui::on_prog_desktop_clicked()
 	desktop.write(QString("Name=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write(QString("GenericName=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write("Categories=Wine;WineBottle;\n");
-	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' " + launcher + " '" + path + "wine' ").toStdString().c_str());
+	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' " + vsync + " " + launcher + " '" + path + "wine' ").toStdString().c_str());
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
 		QString virtualDesktop = "explorer /desktop=" + dskName + "," +

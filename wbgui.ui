@@ -120,6 +120,13 @@
           </property>
          </widget>
         </item>
+        <item>
+         <widget class="QCheckBox" name="noVSync">
+          <property name="text">
+           <string>no VSync</string>
+          </property>
+         </widget>
+        </item>
        </layout>
       </item>
       <item row="2" column="0">
