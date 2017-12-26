@@ -1,6 +1,7 @@
 #include "wbedit.h"
 #include <QProcess>
 #include <QFileDialog>
+#include <QPlainTextEdit>
 
 WBEdit::WBEdit(QSettings *set, qint32 id, QWidget *parent) :
 	QDialog(parent)
@@ -10,6 +11,7 @@ WBEdit::WBEdit(QSettings *set, qint32 id, QWidget *parent) :
 	bottleId = id;
 	bottleName->setText(set->value("Bottle_" + QString::number(bottleId) + "/name").toString());
 	bottlePath->setText(set->value("Bottle_" + QString::number(bottleId) + "/bottle").toString());
+	oldBottlePath = bottlePath->text();
 	winePath->setText(set->value("Bottle_" + QString::number(bottleId) + "/wine").toString());
 	launcher->setText(set->value("Bottle_" + QString::number(bottleId) + "/launcher").toString());
 	cb_launcher->setChecked(!launcher->text().isEmpty());
@@ -31,18 +33,20 @@ void WBEdit::on_buttonBox_accepted()
 {
 	set->setValue("Bottle_" + QString::number(bottleId) + "/name", bottleName->text());
 	set->setValue("Bottle_" + QString::number(bottleId) + "/wine", winePath->text());
-	QProcess proc;
-	proc.setProgram("mv");
-	QStringList args;
-	args << set->value("Bottle_" + QString::number(bottleId) + "/bottle").toString();
-	args << bottlePath->text();
-	QDir k(bottlePath->text());
-	k.removeRecursively();
-	proc.setArguments(args);
-	proc.start();
-	proc.waitForStarted();
-	proc.waitForFinished(-1);
-	set->setValue("Bottle_" + QString::number(bottleId) + "/bottle", bottlePath->text());
+	if (oldBottlePath != bottlePath->text()){
+		QProcess proc;
+		proc.setProgram("mv");
+		QStringList args;
+		args << set->value("Bottle_" + QString::number(bottleId) + "/bottle").toString();
+		args << bottlePath->text();
+		QDir k(bottlePath->text());
+		k.removeRecursively();
+		proc.setArguments(args);
+		proc.start();
+		proc.waitForStarted();
+		proc.waitForFinished(-1);
+		set->setValue("Bottle_" + QString::number(bottleId) + "/bottle", bottlePath->text());
+	}
 	QString _launcher = cb_launcher->isChecked() ? launcher->text() : "";
 	set->setValue("Bottle_" + QString::number(bottleId) + "/launcher", _launcher);
 	emit onAccepted(this);
