@@ -2,6 +2,7 @@
 #include <QProcess>
 #include <QRegExp>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 
 WBGui::WBGui(QFileInfo file, QWidget *parent) :
 	QWidget(parent)
@@ -52,6 +53,7 @@ void WBGui::closeEvent(QCloseEvent *event)
 	set->setValue(appName + "/WinY",    desktop_Y->value());
 	set->setValue(appName + "/Args",    prog_args->text());
 	set->setValue(appName + "/Bottle",  bottles->currentText());
+	set->setValue(appName + "/AddEnv",  addEnv->toPlainText());
 }
 
 void WBGui::toggleUAC()
@@ -131,6 +133,7 @@ void WBGui::loadProgramm()
 	desktop_X->setValue(   set->value(appName + "/WinX").toUInt());
 	desktop_Y->setValue(   set->value(appName + "/WinY").toUInt());
 	prog_args->setText(    set->value(appName + "/Args").toString());
+	addEnv->setPlainText(  set->value(appName + "/AddEnv").toString());
 }
 
 void WBGui::wbs_closed()
@@ -214,6 +217,13 @@ void WBGui::on_prog_run_clicked()
 	env << "WINEFILE=" + path + "winefile";
 	env << "WINEBOOT=" + path + "wineboot";
 
+	QStringList addEnvList = addEnv->toPlainText().split("\n");
+	for (QString e : addEnvList){
+		if (e.isEmpty())
+			continue;
+		env << e;
+	}
+
 	if (noVSync->isChecked()){
 		env << "__GL_SYNC_TO_VBLANK=0";
 		env << "vblank_mode=0";
@@ -249,7 +259,7 @@ void WBGui::on_prog_desktop_clicked()
 	desktop.write(QString("Name=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write(QString("GenericName=" + prog.fileName() + "\n").toStdString().c_str());
 	desktop.write("Categories=Wine;WineBottle;\n");
-	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' " + vsync + " " + launcher + " '" + path + "wine' ").toStdString().c_str());
+	desktop.write(QString("Exec=env WINEPREFIX='" + bottle + "' " + vsync + " " + addEnv->toPlainText().replace("\n", " ") + " " + launcher + " '" + path + "wine' ").toStdString().c_str());
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
 		QString virtualDesktop = "explorer /desktop=" + dskName + "," +
