@@ -221,6 +221,11 @@ void WBGui::on_prog_run_clicked()
 	for (QString e : addEnvList){
 		if (e.isEmpty())
 			continue;
+
+		QRegExp re(R"(\w+=(\"(.*)\"))");
+		if (re.indexIn(e) == 0)
+			e.replace(re.cap(1), re.cap(2));
+
 		env << e;
 	}
 
