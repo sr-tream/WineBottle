@@ -131,11 +131,13 @@ QString WBSettings::bottleName()
 
 void WBSettings::on_wbCreate(WBCreate *create)
 {
+	setBottleOpEnabled(false);
 	load();
 }
 
 void WBSettings::on_wbRename(WBEdit *rename)
 {
+	setBottleOpEnabled(false);
 	load();
 }
 
