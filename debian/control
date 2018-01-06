@@ -1,0 +1,11 @@
+Package: winebottle
+Version: 2.5-10
+Provides: WineBottle
+Maintainer: SR_team<sr-tream@yandex.ru>
+Architecture: amd64
+Section: misc
+Description: Lite bottle(pefix) manager for wine. Writed on C++ with Qt5
+Depends: libqt5concurrent5 (>= 5.7.1+dfsg-3+b1), libqt5core5a (>= 5.7.1+dfsg-3+b1), libqt5dbus5 (>= 5.7.1+dfsg-3+b1), libqt5gui5 (>= 5.7.1+dfsg-3+b1), libqt5widgets5 (>= 5.7.1+dfsg-3+b1)
+Recommends: winehq-staging (>= 2.15.0~stretch), wine-staging(>= 2.15.0~stretch), wine-staging-amd64(>= 2.15.0~stretch), wine-staging-i386(>= 2.15.0~stretch)
+Installed-Size: 36
+Origin: https://prime-hack.net/

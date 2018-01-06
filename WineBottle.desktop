@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Wine Bottle
+Exec=WineBottle
+MimeType=application/x-ms-dos-executable;application/x-msi;application/x-ms-shortcut;
+Icon=WineBottle
+Terminal=false
+Categories=Utility;
