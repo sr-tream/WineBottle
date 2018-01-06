@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir pkg && cd pkg
-mkdir DEBIAN usr usr/{bin,share} usr/share/{applications, pixmaps}
+mkdir DEBIAN usr usr/{bin,share} usr/share/{applications,pixmaps}
 
 cp "../WineBottle" "./usr/bin/WineBottle"
 cp "../../WineBottle.png" "usr/share/pixmaps/WineBottle.png"
