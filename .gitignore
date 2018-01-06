@@ -1,3 +1,4 @@
 *.pro*
 Linux-Debug/
 Linux-Release/
+debian/build/
