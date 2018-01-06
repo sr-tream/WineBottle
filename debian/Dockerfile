@@ -12,7 +12,7 @@ RUN echo "#\!/bin/bash\n\n" >> /bin/build.sh && \
 	echo "mkdir build\n" >> /bin/build.sh && \
 	echo "cd build\n" >> /bin/build.sh && \
 	echo "qmake ..\n" >> /bin/build.sh && \
-	echo "make\n" >> /bin/build.sh && \
+	echo "make -j$(nproc)\n" >> /bin/build.sh && \
 	echo "cp /root/WineBottle/debian/makedeb.sh ./makedeb.sh\n" >> /bin/build.sh && \
 	echo "chmod 755 makedeb.sh\n" >> /bin/build.sh && \
 	echo "./makedeb.sh" >> /bin/build.sh && \
