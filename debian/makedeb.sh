@@ -1,20 +1,11 @@
 #!/bin/bash
 
-mkdir pkg
-cd pkg
-
-mkdir DEBIAN
-mkdir usr
-mkdir usr/bin
-mkdir usr/share
-mkdir usr/share/applications
-mkdir usr/share/pixmaps
+mkdir pkg && cd pkg
+mkdir DEBIAN usr usr/{bin,share} usr/share/{applications, pixmaps}
 
 cp "../WineBottle" "./usr/bin/WineBottle"
 cp "../../WineBottle.png" "usr/share/pixmaps/WineBottle.png"
-#wget https://github.com/sr-tream/WineBottle/blob/master/WineBottle.desktop -O usr/share/applications/WineBottle.desktop
 cp "../../WineBottle.desktop" "usr/share/applications/WineBottle.desktop"
-#wget https://github.com/sr-tream/WineBottle/blob/master/debian/control -O DEBIAN/control
 cp "../../debian/control" "DEBIAN/control"
 
 ARCH=$(uname -m)
@@ -23,14 +14,13 @@ if [ "$ARCH" == "x86_64" ]; then
 else
     ARCH="i386"
 fi
-
-VERSTR=$(cat ./DEBIAN/control | grep Version:\ [0-9]*\.[0-9]*-[0-9]*)
-PKG="winebottle_"${VERSTR:9}"_"${ARCH}".deb"
+sed -i "s/Architecture:\ .*/Architecture:\ $ARCH/g" ./DEBIAN/control
 
 SIZE="Installed-Size: "$(du -s ./ | cut -f1)
 sed -i "s/Installed-Size:\ [0-9]*/$SIZE/g" ./DEBIAN/control
 
-sed -i "s/Architecture:\ .*/Architecture:\ $ARCH/g" ./DEBIAN/control
+VERSTR=$(cat ./DEBIAN/control | grep Version:\ [0-9]*\.[0-9]*-[0-9]*)
+PKG="winebottle_"${VERSTR:9}"_"${ARCH}".deb"
 
 hashdeep -lrs -c md5 usr/ | tail -n +6 | awk -F',' '{ print $2 "  " $3 }' > DEBIAN/md5sums
 cd ..
