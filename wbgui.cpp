@@ -22,6 +22,8 @@ WBGui::WBGui(QFileInfo file, QWidget *parent) :
 		if (prog.filePath().at(0) != '/')
 			prog.setFile(QDir::currentPath(), file.filePath());
 	loadProgramm();
+
+	prog_run->setFocus(Qt::OtherFocusReason);
 }
 
 void WBGui::changeEvent(QEvent *e)
@@ -113,7 +115,7 @@ void WBGui::loadProgramm()
 	if (!prog.isFile())
 		return;
 
-	prog_name->setText(prog.fileName().remove("." + prog.suffix()));
+	setWindowTitle(prog.fileName().remove("." + prog.suffix()));
 	prog_run->setEnabled(true);
 	prog_desktop->setEnabled(true);
 
