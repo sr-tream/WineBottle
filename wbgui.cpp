@@ -13,6 +13,10 @@ WBGui::WBGui(QFileInfo file, QWidget *parent) :
 	connect(wbset, &WBSettings::onHide,
 			this,  &WBGui::wbs_closed);
 
+	resize(set->value("wbgui/width", 380).toInt(),
+		   set->value("wbgui/height", 310).toInt()
+		   );
+
 	loadBottles();
 	QString bName = "Bottle_" + set->value("LastBottle").toString();
 	bottles->setCurrentText(set->value(bName + "/name").toString());
@@ -56,6 +60,9 @@ void WBGui::closeEvent(QCloseEvent *event)
 	set->setValue(appName + "/Args",    prog_args->text());
 	set->setValue(appName + "/Bottle",  bottles->currentText());
 	set->setValue(appName + "/AddEnv",  addEnv->toPlainText());
+
+	set->setValue(appName + "/width", size().width());
+	set->setValue(appName + "/height", size().height());
 }
 
 void WBGui::toggleUAC()
@@ -136,6 +143,10 @@ void WBGui::loadProgramm()
 	desktop_Y->setValue(   set->value(appName + "/WinY").toUInt());
 	prog_args->setText(    set->value(appName + "/Args").toString());
 	addEnv->setPlainText(  set->value(appName + "/AddEnv").toString());
+
+	resize(set->value(appName + "/width", 380).toInt(),
+		   set->value(appName + "/height", 310).toInt()
+		   );
 }
 
 void WBGui::wbs_closed()
