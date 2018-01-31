@@ -34,7 +34,7 @@ void WBSettings::load()
 	bottles->clear();
 	bottleNumber.clear();
 
-	for (int i = 1; i < bottleCount + 1; ++i){
+	for (quint32 i = 1; i < bottleCount + 1; ++i){
 		QString bName = "Bottle_" + QString::number(i);
 		QString name = set->value(bName + "/name").toString();
 		bottleNumber[name] = i;
@@ -129,13 +129,13 @@ QString WBSettings::bottleName()
 	return "Bottle_" + QString::number(bottleId);
 }
 
-void WBSettings::on_wbCreate(WBCreate *create)
+void WBSettings::on_wbCreate(WBCreate *)
 {
 	setBottleOpEnabled(false);
 	load();
 }
 
-void WBSettings::on_wbRename(WBEdit *rename)
+void WBSettings::on_wbRename(WBEdit *)
 {
 	setBottleOpEnabled(false);
 	load();

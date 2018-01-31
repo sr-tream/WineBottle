@@ -1,5 +1,5 @@
 Package: winebottle
-Version: 2.5-10
+Version: 2.6-11
 Provides: WineBottle
 Maintainer: SR_team<sr-tream@yandex.ru>
 Architecture: amd64

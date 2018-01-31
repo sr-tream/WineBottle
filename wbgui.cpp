@@ -157,17 +157,6 @@ void WBGui::on_bottles_currentIndexChanged(const QString &arg1)
 	toggleUAC();
 }
 
-void WBGui::on_prog_select_clicked()
-{
-	prog = QFileDialog::getOpenFileName(this, "Select Windows programm", QDir::homePath(),
-										"MS/Windows (*.exe *.msi *.cmd *.bat *.lnk *.url)\n"
-										"Executable (*.exe *.msi)\n"
-										"Batch (*.cmd *.bat)\n"
-										"Links (*.lnk *.url)\n"
-										"All (*.*)");
-	loadProgramm();
-}
-
 void WBGui::on_prog_run_clicked()
 {
 	quint32 bottleId = bottleNumber[bottles->currentText()];

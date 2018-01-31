@@ -9,38 +9,36 @@
 
 class WBGui : public QWidget, private Ui::WBGui
 {
-    Q_OBJECT
+	Q_OBJECT
 
 public:
-    explicit WBGui(QFileInfo file = QString(),QWidget *parent = 0);
+	explicit WBGui(QFileInfo file = QString(),QWidget *parent = 0);
 
 protected:
-    void changeEvent(QEvent *e);
-    void closeEvent(QCloseEvent *event);
+	void changeEvent(QEvent *e);
+	void closeEvent(QCloseEvent *event);
 
-    virtual void toggleUAC();
-    virtual void loadBottles();
-    virtual void loadProgramm();
+	virtual void toggleUAC();
+	virtual void loadBottles();
+	virtual void loadProgramm();
 private slots:
-    void wbs_closed();
+	void wbs_closed();
 
-    void on_wb_settings_clicked();
+	void on_wb_settings_clicked();
 
-    void on_bottles_currentIndexChanged(const QString &arg1);
+	void on_bottles_currentIndexChanged(const QString &arg1);
 
-    void on_prog_select_clicked();
+	void on_prog_run_clicked();
 
-    void on_prog_run_clicked();
-
-    void on_prog_desktop_clicked();
+	void on_prog_desktop_clicked();
 
 private:
-    WBSettings *wbset = nullptr;
-    QSettings  *set   = nullptr;
+	WBSettings *wbset = nullptr;
+	QSettings  *set   = nullptr;
 
-    quint32                 bottleCount;
-    QMap<QString, quint32>  bottleNumber;
-    QFileInfo               prog;
+	quint32                 bottleCount;
+	QMap<QString, quint32>  bottleNumber;
+	QFileInfo               prog;
 };
 
 #endif // WBGUI_H
