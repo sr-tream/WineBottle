@@ -69,6 +69,8 @@ void WBGui::closeEvent(QCloseEvent *event)
 		set->setValue(appName + "/DirectX", 1);
 	else // Gallium Nine
 		set->setValue(appName + "/DirectX", 2);
+	if (!isHidden())
+		applyDirectX();
 
 	set->setValue(appName + "/width", size().width());
 	set->setValue(appName + "/height", size().height());
@@ -189,6 +191,61 @@ void WBGui::loadProgramm()
 		   );
 }
 
+void WBGui::applyDirectX()
+{
+	hide();
+	quint32 bottleId = bottleNumber[bottles->currentText()];
+	QString bName = "Bottle_" + QString::number(bottleId);
+	QString path = set->value(bName + "/wine").toString() + "bin/";
+	QString bottle = set->value(bName + "/bottle").toString();
+
+	QStringList env = QProcess::systemEnvironment();
+	env << "WINEPREFIX=" + bottle;
+	env << "WINE=" + path + "wine";
+	env << "REGEDIT=" + path + "regedit";
+	env << "CONSOLE=" + path + "wineconsole";
+	env << "WINEFILE=" + path + "winefile";
+	env << "WINEBOOT=" + path + "wineboot";
+
+	QString tmp_dir = "/tmp/WineBottle/Bottle_" + QString::number(bottleId);
+	QDir dir("/tmp/WineBottle");
+	if (!dir.exists())
+		dir.mkdir(dir.path());
+	dir.setPath(tmp_dir);
+	if (!dir.exists())
+		dir.mkdir(dir.path());
+
+	QString section = "[" + regSection + prog.fileName() + "\\DllRedirects]";
+
+	QFile f(tmp_dir + "/" + prog.fileName() + ".reg");
+	if (f.exists())
+		f.remove();
+	f.open(QIODevice::WriteOnly);
+	f.write("\xFF\xFE");
+	f.write((char*)regTitle.toStdU16String().c_str(), regTitle.length() * sizeof(char16_t));
+	f.write((char*)section.toStdU16String().c_str(), section.length() * sizeof(char16_t));
+	f.write("\r\x00\n\x00", 4);
+
+	QString csmt = "\"wined3d\"=" + QString(dx_csmt->isChecked() ? "\"wined3d-csmt.dll\"" : "-") + "\r\n";
+	QString nine = "\"d3d9\"=" + QString(dx_nine->isChecked() ? "\"d3d9-nine.dll\"" : "-") + "\r\n";
+
+	f.write((char*)csmt.toStdU16String().c_str(), csmt.length() * sizeof(char16_t));
+	f.write((char*)nine.toStdU16String().c_str(), nine.length() * sizeof(char16_t));
+	f.close();
+
+	QStringList reg_args;
+	reg_args << "cmd";
+	reg_args << "/c";
+	reg_args << "regedit";
+	reg_args << tmp_dir + "/" + prog.fileName() + ".reg";
+	QProcess reg_proc;
+	reg_proc.setEnvironment(env);
+	reg_proc.setProgram(path + "wine");
+	reg_proc.setArguments(reg_args);
+	reg_proc.start();
+	reg_proc.waitForFinished();
+}
+
 void WBGui::wbs_closed()
 {
 	wb_settings->setEnabled(true);
@@ -214,8 +271,6 @@ void WBGui::on_bottles_currentIndexChanged(const QString &arg1)
 
 void WBGui::on_prog_run_clicked()
 {
-	hide();
-
 	quint32 bottleId = bottleNumber[bottles->currentText()];
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString path = set->value(bName + "/wine").toString() + "bin/";
@@ -280,46 +335,7 @@ void WBGui::on_prog_run_clicked()
 		env << "vblank_mode=0";
 	}
 
-
-	QString tmp_dir = "/tmp/WineBottle/Bottle_" + QString::number(bottleId);
-	QDir dir("/tmp/WineBottle");
-	if (!dir.exists())
-		dir.mkdir(dir.path());
-	dir.setPath(tmp_dir);
-	if (!dir.exists())
-		dir.mkdir(dir.path());
-
-	QString section = "[" + regSection + prog.fileName() + "\\DllRedirects]";
-
-	QFile f(tmp_dir + "/" + prog.fileName() + ".reg");
-	if (f.exists())
-		f.remove();
-	f.open(QIODevice::WriteOnly);
-	f.write("\xFF\xFE");
-	f.write((char*)regTitle.toStdU16String().c_str(), regTitle.length() * sizeof(char16_t));
-	f.write((char*)section.toStdU16String().c_str(), section.length() * sizeof(char16_t));
-	f.write("\r\x00\n\x00", 4);
-
-	QString csmt = "\"wined3d\"=" + QString(dx_csmt->isChecked() ? "\"wined3d-csmt.dll\"" : "-") + "\r\n";
-	QString nine = "\"d3d9\"=" + QString(dx_nine->isChecked() ? "\"d3d9-nine.dll\"" : "-") + "\r\n";
-
-	f.write((char*)csmt.toStdU16String().c_str(), csmt.length() * sizeof(char16_t));
-	f.write((char*)nine.toStdU16String().c_str(), nine.length() * sizeof(char16_t));
-	f.close();
-
-	QStringList reg_args;
-	reg_args << "cmd";
-	reg_args << "/c";
-	reg_args << "regedit";
-	reg_args << tmp_dir + "/" + prog.fileName() + ".reg";
-	QProcess reg_proc;
-	reg_proc.setEnvironment(env);
-	reg_proc.setProgram(path + "wine");
-	reg_proc.setArguments(reg_args);
-	reg_proc.start();
-	reg_proc.waitForFinished();
-
-
+	applyDirectX();
 	QProcess *proc = new QProcess(nullptr);
 	proc->setProgram(path + "wine");
 	proc->setArguments(args);

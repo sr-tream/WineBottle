@@ -23,6 +23,7 @@ protected:
 	virtual void toggleNINE();
 	virtual void loadBottles();
 	virtual void loadProgramm();
+	virtual void applyDirectX();
 private slots:
 	void wbs_closed();
 
