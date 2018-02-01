@@ -5,7 +5,7 @@ Writen in C++ using Qt5
 
 ### Screensots
 ##### Main window
-![Alt text](https://dl.prime-hack.net/2018-01-31-135631_381x336_scrot.png)
+![Alt text](https://dl.prime-hack.net/2018-02-02-011304_503x337_scrot.png)
 ##### Settings
 ![Alt text](https://i.imgur.com/oGonpl4.png)
 ##### Create bottle

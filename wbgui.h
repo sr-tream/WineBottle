@@ -19,6 +19,8 @@ protected:
 	void closeEvent(QCloseEvent *event);
 
 	virtual void toggleUAC();
+	virtual void toggleCSMT();
+	virtual void toggleNINE();
 	virtual void loadBottles();
 	virtual void loadProgramm();
 private slots:
@@ -39,6 +41,9 @@ private:
 	quint32                 bottleCount;
 	QMap<QString, quint32>  bottleNumber;
 	QFileInfo               prog;
+
+	const QString regSection = "HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\";
+	const QString regTitle = "Windows Registry Editor Version 5.00\r\n\r\n";
 };
 
 #endif // WBGUI_H

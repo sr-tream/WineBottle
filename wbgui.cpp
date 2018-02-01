@@ -3,6 +3,8 @@
 #include <QRegExp>
 #include <QMessageBox>
 #include <QPlainTextEdit>
+#include <QRadioButton>
+#include <QEvent>
 
 WBGui::WBGui(QFileInfo file, QWidget *parent) :
 	QWidget(parent)
@@ -61,6 +63,13 @@ void WBGui::closeEvent(QCloseEvent *event)
 	set->setValue(appName + "/Bottle",  bottles->currentText());
 	set->setValue(appName + "/AddEnv",  addEnv->toPlainText());
 
+	if (dx_opengl->isChecked())
+		set->setValue(appName + "/DirectX", 0);
+	else if (dx_csmt->isChecked())
+		set->setValue(appName + "/DirectX", 1);
+	else // Gallium Nine
+		set->setValue(appName + "/DirectX", 2);
+
 	set->setValue(appName + "/width", size().width());
 	set->setValue(appName + "/height", size().height());
 }
@@ -87,6 +96,30 @@ void WBGui::toggleUAC()
 
 	if (!hasUAC->isEnabled())
 		hasUAC->setChecked(false);
+}
+
+void WBGui::toggleCSMT()
+{
+	quint32 bottleId = bottleNumber[bottles->currentText()];
+	QString bName = "Bottle_" + QString::number(bottleId);
+	QString bottle = set->value(bName + "/bottle").toString();
+	QString dllPath = bottle + "drive_c/windows/system32/d3d9-nine.dll";
+
+	if (QFile::exists(dllPath))
+		dx_nine->setEnabled(true);
+	else dx_nine->setEnabled(false);
+}
+
+void WBGui::toggleNINE()
+{
+	quint32 bottleId = bottleNumber[bottles->currentText()];
+	QString bName = "Bottle_" + QString::number(bottleId);
+	QString bottle = set->value(bName + "/bottle").toString();
+	QString dllPath = bottle + "drive_c/windows/system32/wined3d-csmt.dll";
+
+	if (QFile::exists(dllPath))
+		dx_csmt->setEnabled(true);
+	else dx_csmt->setEnabled(false);
 }
 
 void WBGui::loadBottles()
@@ -137,12 +170,19 @@ void WBGui::loadProgramm()
 	hasLogging->setChecked(set->value(appName + "/Logging").toBool());
 	hasUAC->setChecked(    set->value(appName + "/UAC").toBool());
 	hasConsole->setChecked(set->value(appName + "/Console").toBool());
-	noVSync->setChecked(set->value(appName + "/NoVSync").toBool());
+	noVSync->setChecked(   set->value(appName + "/NoVSync").toBool());
 	hasDesktop->setChecked(set->value(appName + "/Window").toBool());
 	desktop_X->setValue(   set->value(appName + "/WinX").toUInt());
 	desktop_Y->setValue(   set->value(appName + "/WinY").toUInt());
 	prog_args->setText(    set->value(appName + "/Args").toString());
 	addEnv->setPlainText(  set->value(appName + "/AddEnv").toString());
+
+	int dx = set->value(appName + "/DirectX").toInt();
+	if (dx){
+		if (dx == 1)
+			dx_csmt->setChecked(true);
+		else dx_nine->setChecked(true);
+	} else dx_opengl->setChecked(true);
 
 	resize(set->value(appName + "/width", 380).toInt(),
 		   set->value(appName + "/height", 310).toInt()
@@ -168,10 +208,14 @@ void WBGui::on_wb_settings_clicked()
 void WBGui::on_bottles_currentIndexChanged(const QString &arg1)
 {
 	toggleUAC();
+	toggleCSMT();
+	toggleNINE();
 }
 
 void WBGui::on_prog_run_clicked()
 {
+	hide();
+
 	quint32 bottleId = bottleNumber[bottles->currentText()];
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString path = set->value(bName + "/wine").toString() + "bin/";
@@ -235,6 +279,46 @@ void WBGui::on_prog_run_clicked()
 		env << "__GL_SYNC_TO_VBLANK=0";
 		env << "vblank_mode=0";
 	}
+
+
+	QString tmp_dir = "/tmp/WineBottle/Bottle_" + QString::number(bottleId);
+	QDir dir("/tmp/WineBottle");
+	if (!dir.exists())
+		dir.mkdir(dir.path());
+	dir.setPath(tmp_dir);
+	if (!dir.exists())
+		dir.mkdir(dir.path());
+
+	QString section = "[" + regSection + prog.fileName() + "\\DllRedirects]";
+
+	QFile f(tmp_dir + "/" + prog.fileName() + ".reg");
+	if (f.exists())
+		f.remove();
+	f.open(QIODevice::WriteOnly);
+	f.write("\xFF\xFE");
+	f.write((char*)regTitle.toStdU16String().c_str(), regTitle.length() * sizeof(char16_t));
+	f.write((char*)section.toStdU16String().c_str(), section.length() * sizeof(char16_t));
+	f.write("\r\x00\n\x00", 4);
+
+	QString csmt = "\"wined3d\"=" + QString(dx_csmt->isChecked() ? "\"wined3d-csmt.dll\"" : "-") + "\r\n";
+	QString nine = "\"d3d9\"=" + QString(dx_nine->isChecked() ? "\"d3d9-nine.dll\"" : "-") + "\r\n";
+
+	f.write((char*)csmt.toStdU16String().c_str(), csmt.length() * sizeof(char16_t));
+	f.write((char*)nine.toStdU16String().c_str(), nine.length() * sizeof(char16_t));
+	f.close();
+
+	QStringList reg_args;
+	reg_args << "cmd";
+	reg_args << "/c";
+	reg_args << "regedit";
+	reg_args << tmp_dir + "/" + prog.fileName() + ".reg";
+	QProcess reg_proc;
+	reg_proc.setEnvironment(env);
+	reg_proc.setProgram(path + "wine");
+	reg_proc.setArguments(reg_args);
+	reg_proc.start();
+	reg_proc.waitForFinished();
+
 
 	QProcess *proc = new QProcess(nullptr);
 	proc->setProgram(path + "wine");
