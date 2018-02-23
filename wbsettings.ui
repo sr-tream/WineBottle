@@ -86,6 +86,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="bottle_ninewinecfg">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>NineWineCfg</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="bottle_d3dsettings">
          <property name="enabled">
           <bool>false</bool>

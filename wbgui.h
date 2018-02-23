@@ -45,6 +45,8 @@ private:
 
 	const QString regSection = "HKEY_CURRENT_USER\\Software\\Wine\\AppDefaults\\";
 	const QString regTitle = "Windows Registry Editor Version 5.00\r\n\r\n";
+
+	bool ninewinecfg;
 };
 
 #endif // WBGUI_H

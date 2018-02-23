@@ -105,11 +105,16 @@ void WBGui::toggleCSMT()
 	quint32 bottleId = bottleNumber[bottles->currentText()];
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString bottle = set->value(bName + "/bottle").toString();
-	QString dllPath = bottle + "drive_c/windows/system32/d3d9-nine.dll";
+	QString dllPath = bottle + "drive_c/windows/system32/wined3d-csmt.dll";
 
-	if (QFile::exists(dllPath))
-		dx_nine->setEnabled(true);
-	else dx_nine->setEnabled(false);
+	if (QFile::exists(dllPath) && !ninewinecfg)
+		dx_csmt->setEnabled(true);
+	else {
+		dx_csmt->setEnabled(false);
+		QString appName = "Programm_" + prog.filePath().replace('/', '\\');
+		if (set->value(appName + "/DirectX").toInt() == 1)
+			dx_opengl->setChecked(true);
+	}
 }
 
 void WBGui::toggleNINE()
@@ -117,11 +122,16 @@ void WBGui::toggleNINE()
 	quint32 bottleId = bottleNumber[bottles->currentText()];
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString bottle = set->value(bName + "/bottle").toString();
-	QString dllPath = bottle + "drive_c/windows/system32/wined3d-csmt.dll";
+	QString dllPath = bottle + "drive_c/windows/system32/d3d9-nine.dll";
 
-	if (QFile::exists(dllPath))
-		dx_csmt->setEnabled(true);
-	else dx_csmt->setEnabled(false);
+	if (QFile::exists(dllPath) && !ninewinecfg)
+		dx_nine->setEnabled(true);
+	else {
+		dx_nine->setEnabled(false);
+		QString appName = "Programm_" + prog.filePath().replace('/', '\\');
+		if (set->value(appName + "/DirectX").toInt() == 2)
+			dx_opengl->setChecked(true);
+	}
 }
 
 void WBGui::loadBottles()
@@ -194,6 +204,9 @@ void WBGui::loadProgramm()
 void WBGui::applyDirectX()
 {
 	hide();
+	if (ninewinecfg)
+		return;
+
 	quint32 bottleId = bottleNumber[bottles->currentText()];
 	QString bName = "Bottle_" + QString::number(bottleId);
 	QString path = set->value(bName + "/wine").toString() + "bin/";
@@ -264,6 +277,13 @@ void WBGui::on_wb_settings_clicked()
 
 void WBGui::on_bottles_currentIndexChanged(const QString &arg1)
 {
+	quint32 bottleId = bottleNumber[bottles->currentText()];
+	QString bName = "Bottle_" + QString::number(bottleId);
+	QString path = set->value(bName + "/wine").toString() + "bin/";
+	if (QFile::exists(path + "ninewinecfg"))
+		ninewinecfg = true;
+	else ninewinecfg = false;
+
 	toggleUAC();
 	toggleCSMT();
 	toggleNINE();

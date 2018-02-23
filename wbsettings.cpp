@@ -103,6 +103,11 @@ void WBSettings::setBottleOpEnabled(bool enabled)
 	bottle_winecfg->setEnabled(enabled);
 	bottle_d3dsettings->setEnabled(enabled);
 	bottle_reboot->setEnabled(enabled);
+	if (enabled){
+		QString path = set->value(bottleName() + "/wine").toString() + "bin/";
+		if (QFile::exists(path + "ninewinecfg"))
+			bottle_ninewinecfg->setEnabled(enabled);
+	} else bottle_ninewinecfg->setEnabled(enabled);
 	if (winetricks)
 		bottle_winetricks->setEnabled(enabled);
 }
@@ -261,4 +266,14 @@ void WBSettings::on_bottle_d3dsettings_clicked()
 {
 	d3dset->setBottleId(bottleNumber[bottles->currentItem()->text()]);
 	d3dset->show();
+}
+
+void WBSettings::on_bottle_ninewinecfg_clicked()
+{
+	QString path = set->value(bottleName() + "/wine").toString() + "bin/";
+	QProcess *proc = new QProcess(this);
+	proc->setEnvironment(env());
+	proc->setProgram(path + "ninewinecfg");
+	proc->start();
+	plist.push_back(proc);
 }

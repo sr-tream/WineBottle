@@ -52,6 +52,8 @@ private slots:
 
 	void on_bottle_d3dsettings_clicked();
 
+	void on_bottle_ninewinecfg_clicked();
+
 signals:
 	void onHide();
 
