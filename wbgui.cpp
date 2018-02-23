@@ -63,14 +63,24 @@ void WBGui::closeEvent(QCloseEvent *event)
 	set->setValue(appName + "/Bottle",  bottles->currentText());
 	set->setValue(appName + "/AddEnv",  addEnv->toPlainText());
 
-	if (dx_opengl->isChecked())
+	if (dx_opengl->isChecked()){
+		if (set->value(appName + "/DirectX") != 0)
+			if (!isHidden())
+				applyDirectX();
 		set->setValue(appName + "/DirectX", 0);
-	else if (dx_csmt->isChecked())
+	}
+	else if (dx_csmt->isChecked()){
+		if (set->value(appName + "/DirectX") != 1)
+			if (!isHidden())
+				applyDirectX();
 		set->setValue(appName + "/DirectX", 1);
-	else // Gallium Nine
+	}
+	else { // Gallium Nine
+		if (set->value(appName + "/DirectX") != 2)
+			if (!isHidden())
+				applyDirectX();
 		set->setValue(appName + "/DirectX", 2);
-	if (!isHidden())
-		applyDirectX();
+	}
 
 	set->setValue(appName + "/width", size().width());
 	set->setValue(appName + "/height", size().height());
