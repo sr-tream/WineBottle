@@ -117,7 +117,7 @@ void WBGui::toggleCSMT()
 	QString bottle = set->value(bName + "/bottle").toString();
 	QString dllPath = bottle + "drive_c/windows/system32/wined3d-csmt.dll";
 
-	if (QFile::exists(dllPath) && !ninewinecfg)
+	if (QFile::exists(dllPath))
 		dx_csmt->setEnabled(true);
 	else {
 		dx_csmt->setEnabled(false);
@@ -320,6 +320,9 @@ void WBGui::on_prog_run_clicked()
 	QStringList args;
 	if (hasDesktop->isChecked()){
 		QString dskName = prog.fileName().remove("." + prog.suffix());
+		for (QChar &ch : dskName)
+			if (ch.isPunct() || ch.isSpace())
+				ch = '_';
 		QString desktop = "/desktop=" + dskName + "," +
 				QString::number(desktop_X->value()) + "x" +
 				QString::number(desktop_Y->value());
