@@ -244,13 +244,28 @@ void WBSettings::on_bottle_delete_clicked()
 
 void WBSettings::on_bottle_clone_clicked()
 {
-	QString lastBottle = bottleName();
+	QString currentBottle = bottleName();
 	bottleCount++;
+	QString newBottle = "Bottle_" + QString::number(bottleCount);
+
 	set->setValue("BottleCount", bottleCount);
-	set->setValue(bottleName() + "/bottle", set->value(lastBottle + "/bottle").toString() + "_cloned");
-	set->setValue(bottleName() + "/wine", set->value(lastBottle + "/wine").toString());
-	set->setValue(bottleName() + "/name", set->value(lastBottle + "/name").toString() + "_cloned");
-	set->setValue(bottleName() + "/launcher", set->value(lastBottle + "/launcher").toString());
+	QString bottle = set->value(currentBottle + "/bottle").toString();
+	if (bottle[bottle.length() - 1] == '/')
+		bottle.remove(bottle.length() - 1, 1);
+	set->setValue(newBottle + "/bottle", bottle + "_cloned/");
+	set->setValue(newBottle + "/wine", set->value(currentBottle + "/wine").toString());
+	set->setValue(newBottle + "/name", set->value(currentBottle + "/name").toString() + " (cloned)");
+	set->setValue(newBottle + "/launcher", set->value(currentBottle + "/launcher").toString());
+
+	QProcess proc;
+	proc.setEnvironment(env());
+	proc.setProgram("cp");
+	proc.setArguments(QStringList() << "-r" <<
+					  set->value(currentBottle + "/bottle").toString() <<
+					  bottle + "_cloned");
+	proc.start();
+	proc.waitForFinished(-1);
+	load();
 }
 
 void WBSettings::on_bottle_reboot_clicked()
