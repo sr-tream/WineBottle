@@ -146,6 +146,16 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="bottle_terminal">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Open in terminal</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="bottle_winetricks">
          <property name="enabled">
           <bool>false</bool>

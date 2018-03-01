@@ -2,6 +2,7 @@
 #include <QCloseEvent>
 #include <QDebug>
 #include <QDir>
+#include <stdexcept>
 
 WBSettings::WBSettings(QSettings *set, QWidget *parent) :
 	QDialog(parent)
@@ -10,22 +11,8 @@ WBSettings::WBSettings(QSettings *set, QWidget *parent) :
 	this->set = set;
 	d3dset = new D3DSettings(set, this);
 
-	QStringList sysEnv = QProcess::systemEnvironment();
-	for (QString e : sysEnv){
-		if (e.indexOf("PATH=") == 0){
-			e.remove("PATH=");
-			QStringList pathList = e.split(':');
-			for (QString path : pathList){
-				if (path.at(path.length() - 1) != '/')
-					path += '/';
-				if (QFile::exists(path + "winetricks")){
-					winetricks = true;
-					break;
-				}
-			}
-			break;
-		}
-	}
+	findTerminal();
+	winetricks = findInPath("winetricks");
 }
 
 void WBSettings::load()
@@ -103,6 +90,9 @@ void WBSettings::setBottleOpEnabled(bool enabled)
 	bottle_winecfg->setEnabled(enabled);
 	bottle_d3dsettings->setEnabled(enabled);
 	bottle_reboot->setEnabled(enabled);
+	if (terminal.isEmpty())
+		bottle_terminal->setEnabled(false);
+	else bottle_terminal->setEnabled(enabled);
 	if (enabled){
 		QString path = set->value(bottleName() + "/wine").toString() + "bin/";
 		if (QFile::exists(path + "ninewinecfg"))
@@ -132,6 +122,44 @@ QString WBSettings::bottleName()
 {
 	quint32 bottleId = bottleNumber[bottles->currentItem()->text()];
 	return "Bottle_" + QString::number(bottleId);
+}
+
+bool WBSettings::findInPath(QString filename)
+{
+	QStringList sysEnv = QProcess::systemEnvironment();
+	for (QString e : sysEnv){
+		if (e.indexOf("PATH=") == 0){
+			e.remove("PATH=");
+			QStringList pathList = e.split(':');
+			for (QString path : pathList){
+				if (path.at(path.length() - 1) != '/')
+					path += '/';
+				if (QFile::exists(path + filename))
+					return true;
+			}
+			return false;
+		}
+	}
+	throw std::runtime_error("System environment is empty!");
+}
+
+void WBSettings::findTerminal()
+{
+	if (findInPath("konsole"))
+		terminal = "konsole";
+	else if (findInPath("gnome-terminal"))
+		terminal = "gnome-terminal";
+	else if (findInPath("xfce4-terminal"))
+		terminal = "xfce4-terminal";
+	else if (findInPath("lxterminal"))
+		terminal = "lxterminal";
+	else if (findInPath("lxterminal"))
+		terminal = "lxterminal";
+	else if (findInPath("mate-terminal"))
+		terminal = "mate-terminal";
+	else if (findInPath("xterm"))
+		terminal = "xterm";
+	else terminal = "";
 }
 
 void WBSettings::on_wbCreate(WBCreate *)
@@ -291,6 +319,15 @@ void WBSettings::on_bottle_ninewinecfg_clicked()
 	QProcess *proc = new QProcess(this);
 	proc->setEnvironment(env());
 	proc->setProgram(path + "ninewinecfg");
+	proc->start();
+	plist.push_back(proc);
+}
+
+void WBSettings::on_bottle_terminal_clicked()
+{
+	QProcess *proc = new QProcess(this);
+	proc->setEnvironment(env());
+	proc->setProgram(terminal);
 	proc->start();
 	plist.push_back(proc);
 }

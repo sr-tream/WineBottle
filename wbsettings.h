@@ -24,6 +24,8 @@ protected:
 	virtual void setBottleOpEnabled(bool enabled);
 	virtual QStringList env();
 	virtual QString bottleName();
+	virtual bool findInPath(QString filename);
+	virtual void findTerminal();
 private slots:
 	void on_wbCreate(WBCreate*);
 	void on_wbRename(WBEdit*);
@@ -54,6 +56,8 @@ private slots:
 
 	void on_bottle_ninewinecfg_clicked();
 
+	void on_bottle_terminal_clicked();
+
 signals:
 	void onHide();
 
@@ -66,6 +70,7 @@ private:
 	quint32                 bottleCount;
 	QMap<QString, quint32>  bottleNumber;
 	bool                    winetricks;
+	QString					terminal;
 };
 
 #endif // WBSETTINGS_H
