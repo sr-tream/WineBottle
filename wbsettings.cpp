@@ -115,6 +115,13 @@ QStringList WBSettings::env()
 	env << "WINEFILE=" + path + "winefile";
 	env << "WINEBOOT=" + path + "wineboot";
 
+	for (QString &e : env){
+		if (e.indexOf("PATH=") == 0){
+			e.remove("PATH=");
+			e = "PATH=" + path + ":" + e;
+		}
+	}
+
 	return env;
 }
 
@@ -325,17 +332,8 @@ void WBSettings::on_bottle_ninewinecfg_clicked()
 
 void WBSettings::on_bottle_terminal_clicked()
 {
-	QString path = set->value(bottleName() + "/wine").toString() + "bin/";
-	QStringList _env = env();
-	for (QString &e : _env){
-		if (e.indexOf("PATH=") == 0){
-			e.remove("PATH=");
-			e = "PATH=" + path + ":" + e;
-		}
-	}
-
 	QProcess *proc = new QProcess(this);
-	proc->setEnvironment(_env);
+	proc->setEnvironment(env());
 	proc->setProgram(terminal);
 	proc->start();
 	plist.push_back(proc);
